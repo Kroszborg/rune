@@ -1,0 +1,60 @@
+{
+  "name": "@kroszborg/rune",
+  "version": "0.1.0",
+  "description": "Lightweight, fully customizable, framework-agnostic QR code library. Pure SVG, zero dependencies, built from scratch per ISO/IEC 18004.",
+  "author": "Abhiman Panwar (@kroszborg)",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "keywords": ["qr", "qrcode", "qr-code", "svg", "generator", "iso-18004", "zero-dependency"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kroszborg/rune",
+    "directory": "packages/rune"
+  },
+  "homepage": "https://rune.kroszborg.co",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./node": {
+      "types": "./dist/node.d.ts",
+      "import": "./dist/node.js",
+      "require": "./dist/node.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "clean": "rimraf dist .turbo"
+  },
+  "optionalDependencies": {
+    "@resvg/resvg-js": "^2.6.2",
+    "pdf-lib": "^1.17.1",
+    "sharp": "^0.33.5"
+  },
+  "peerDependenciesMeta": {
+    "@resvg/resvg-js": { "optional": true },
+    "sharp": { "optional": true },
+    "pdf-lib": { "optional": true }
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/qrcode": "^1.5.5",
+    "jsqr": "^1.4.0",
+    "qrcode": "^1.5.4",
+    "typescript": "^5.7.2",
+    "tsup": "^8.3.5",
+    "vitest": "^2.1.8"
+  }
+}
