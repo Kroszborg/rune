@@ -1,0 +1,33 @@
+{
+  "name": "rune-monorepo",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Rune — a lightweight, fully customizable, framework-agnostic QR code library.",
+  "author": "Abhiman Panwar (@kroszborg)",
+  "license": "MIT",
+  "type": "module",
+  "packageManager": "pnpm@10.32.1",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "test": "turbo run test",
+    "lint": "biome check .",
+    "format": "biome format --write .",
+    "typecheck": "turbo run typecheck",
+    "clean": "turbo run clean && rimraf node_modules",
+    "changeset": "changeset",
+    "release": "turbo run build && changeset publish"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@changesets/cli": "^2.27.11",
+    "rimraf": "^6.0.1",
+    "tsup": "^8.3.5",
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}
