@@ -1,0 +1,46 @@
+{
+  "name": "@kroszborg/rune-vue",
+  "version": "0.1.0",
+  "description": "Vue 3 component for Rune — lightweight, fully customizable QR codes.",
+  "author": "Abhiman Panwar (@kroszborg)",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "keywords": ["qr", "qrcode", "vue", "svg", "component"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kroszborg/rune",
+    "directory": "packages/rune-vue"
+  },
+  "homepage": "https://rune.kroszborg.co",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "clean": "rimraf dist .turbo"
+  },
+  "dependencies": {
+    "@kroszborg/rune": "workspace:*"
+  },
+  "peerDependencies": {
+    "vue": ">=3.3"
+  },
+  "devDependencies": {
+    "vue": "^3.5.13",
+    "typescript": "^5.7.2",
+    "tsup": "^8.3.5",
+    "vitest": "^2.1.8"
+  }
+}
