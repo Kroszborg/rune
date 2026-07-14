@@ -1,0 +1,173 @@
+@import "tailwindcss";
+
+/* ── Theme tokens ────────────────────────────────────────────────────────────
+   Ported from C:\coding\beam (dark) with an authored light counterpart.
+   Semantic vars switch on the `.dark` class; @theme maps them into Tailwind
+   utilities (bg-paper, text-ink, border-line, text-mint, …). */
+
+:root {
+  --paper: #ffffff;
+  --panel: #f7f7f8;
+  --paper-2: #efeff1;
+  --ink: #0b0b0f;
+  --ink-soft: #55555f;
+  --ink-faint: #8c8c96;
+  --line: #e7e7ea;
+  --line-strong: #d6d6dc;
+  --signal: #0b0b0f;
+  --signal-contrast: #ffffff;
+  --mint: #0f7a5c;
+  --mint-soft: #12946e;
+  --danger: #d23f41;
+  --glass-fill: rgba(10, 10, 15, 0.02);
+  --glass-line: rgba(10, 10, 15, 0.08);
+  --grain: 0.025;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  color-scheme: light;
+}
+
+.dark {
+  --paper: #070708;
+  --panel: #0f0f12;
+  --paper-2: #17171b;
+  --ink: #f4f4f6;
+  --ink-soft: #9a9aa3;
+  --ink-faint: #5e5e67;
+  --line: #1b1b1f;
+  --line-strong: #2c2c33;
+  --signal: #f4f4f6;
+  --signal-contrast: #070b16;
+  --mint: #54d6a6;
+  --mint-soft: #2bbd8a;
+  --danger: #f0686a;
+  --glass-fill: rgba(255, 255, 255, 0.025);
+  --glass-line: rgba(255, 255, 255, 0.07);
+  --grain: 0.04;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-panel: var(--panel);
+  --color-paper-2: var(--paper-2);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-faint: var(--ink-faint);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-signal: var(--signal);
+  --color-signal-contrast: var(--signal-contrast);
+  --color-mint: var(--mint);
+  --color-mint-soft: var(--mint-soft);
+  --color-danger: var(--danger);
+
+  --font-display: var(--font-display), Georgia, "Times New Roman", serif;
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-mono), ui-monospace, "SF Mono", Menlo, monospace;
+
+  --radius-card: 16px;
+}
+
+* {
+  border-color: var(--line);
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: -0.005em;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* Signature beam ambiance: faint film grain + a top-center radial glow. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: var(--grain);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  top: -20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80vw;
+  height: 60vh;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in oklab, var(--mint) 12%, transparent),
+    transparent
+  );
+  opacity: 0.5;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--mint) 30%, transparent);
+}
+
+/* ── Utilities ─────────────────────────────────────────────────────────── */
+
+.eyebrow {
+  font-family: var(--font-sans), sans-serif;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.serif-italic {
+  font-family: var(--font-display), serif;
+  font-style: italic;
+}
+
+.glass {
+  background: var(--glass-fill);
+  border: 1px solid var(--glass-line);
+  border-radius: var(--radius-card);
+}
+
+.rule {
+  height: 1px;
+  background: var(--line);
+}
+
+.link-ul {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.link-ul:hover {
+  background-size: 100% 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
