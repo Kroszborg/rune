@@ -1,0 +1,41 @@
+{
+  "name": "@kroszborg/rune-decode",
+  "version": "0.1.0",
+  "description": "From-scratch QR code decoder — module-matrix and image (RGBA) decoding with Reed–Solomon error correction.",
+  "author": "Abhiman Panwar (@kroszborg)",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "keywords": ["qr", "qrcode", "decode", "decoder", "reed-solomon", "scanner"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kroszborg/rune",
+    "directory": "packages/rune-decode"
+  },
+  "homepage": "https://rune.kroszborg.co",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "clean": "rimraf dist .turbo"
+  },
+  "devDependencies": {
+    "@kroszborg/rune": "workspace:*",
+    "@resvg/resvg-js": "^2.6.2",
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2",
+    "tsup": "^8.3.5",
+    "vitest": "^2.1.8"
+  }
+}
