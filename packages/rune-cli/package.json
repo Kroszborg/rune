@@ -1,0 +1,40 @@
+{
+  "name": "@kroszborg/rune-cli",
+  "version": "0.1.0",
+  "description": "Generate customizable QR codes from the terminal with Rune.",
+  "author": "Abhiman Panwar (@kroszborg)",
+  "license": "MIT",
+  "type": "module",
+  "keywords": ["qr", "qrcode", "cli", "svg", "png", "generator"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kroszborg/rune",
+    "directory": "packages/rune-cli"
+  },
+  "homepage": "https://rune.kroszborg.co",
+  "bin": {
+    "rune": "./dist/cli.js"
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "clean": "rimraf dist .turbo"
+  },
+  "dependencies": {
+    "@kroszborg/rune": "workspace:*",
+    "@kroszborg/rune-decode": "workspace:*"
+  },
+  "optionalDependencies": {
+    "@resvg/resvg-js": "^2.6.2",
+    "pdf-lib": "^1.17.1",
+    "sharp": "^0.33.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2",
+    "tsup": "^8.3.5",
+    "vitest": "^2.1.8"
+  }
+}
