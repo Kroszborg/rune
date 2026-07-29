@@ -9,7 +9,7 @@
   "keywords": ["qr", "qrcode", "web-component", "custom-element", "vanilla", "svg"],
   "repository": {
     "type": "git",
-    "url": "https://github.com/kroszborg/rune",
+    "url": "https://github.com/Kroszborg/rune",
     "directory": "packages/rune-wc"
   },
   "homepage": "https://rune.kroszborg.co",
@@ -39,5 +39,8 @@
     "typescript": "^5.7.2",
     "tsup": "^8.3.5",
     "vitest": "^2.1.8"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

@@ -1,9 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Fully static HTML export — the site has no server runtime, so it can be
+  // served by any static host (Nginx on a VPS) with near-zero memory.
+  output: 'export',
+  images: { unoptimized: true },
   reactStrictMode: true,
   transpilePackages: ['@kroszborg/rune', '@kroszborg/rune-react'],
-  // Never bundle the optional native raster/PDF peers (only used via /node).
-  serverExternalPackages: ['@resvg/resvg-js', 'sharp', 'pdf-lib'],
 };
 
 export default nextConfig;

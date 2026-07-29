@@ -9,7 +9,7 @@
   "keywords": ["qr", "qrcode", "qr-code", "svg", "generator", "iso-18004", "zero-dependency"],
   "repository": {
     "type": "git",
-    "url": "https://github.com/kroszborg/rune",
+    "url": "https://github.com/Kroszborg/rune",
     "directory": "packages/rune"
   },
   "homepage": "https://rune.kroszborg.co",
@@ -44,9 +44,15 @@
     "sharp": "^0.33.5"
   },
   "peerDependenciesMeta": {
-    "@resvg/resvg-js": { "optional": true },
-    "sharp": { "optional": true },
-    "pdf-lib": { "optional": true }
+    "@resvg/resvg-js": {
+      "optional": true
+    },
+    "sharp": {
+      "optional": true
+    },
+    "pdf-lib": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
@@ -56,5 +62,8 @@
     "typescript": "^5.7.2",
     "tsup": "^8.3.5",
     "vitest": "^2.1.8"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

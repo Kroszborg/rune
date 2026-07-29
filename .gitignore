@@ -12,3 +12,6 @@ coverage/
 .vercel
 test-results/
 playwright-report/
+
+# local deployment notes (not published)
+deploy.md
