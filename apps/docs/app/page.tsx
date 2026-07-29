@@ -19,8 +19,8 @@ const FEATURES = [
     'QR encoding built from scratch per ISO/IEC 18004. The core has no runtime deps.',
   ],
   [
-    'Four frameworks',
-    'One agnostic engine, thin wrappers for React, Vue, and a <rune-qr> Web Component.',
+    'Any framework',
+    'React, Vue, vanilla and a <rune-qr> Web Component. Everything else renders via toSVGString.',
   ],
   ['Every shape', 'Eight dot styles, five finder rings, three finder cores - mix freely.'],
   [

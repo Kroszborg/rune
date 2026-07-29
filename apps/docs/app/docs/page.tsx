@@ -122,6 +122,38 @@ export default () => <SvgXml xml={svg} width={256} height={256} />;`}</code>
       </section>
 
       <section className="mb-12">
+        <h2 className="mb-4 text-2xl">Any framework</h2>
+        <p className="mb-4 text-ink-soft">
+          You do not need a dedicated package for every framework.{' '}
+          <code className="text-mint">toSVGString</code> returns a plain SVG string, so any
+          framework can render a fully-customized Rune QR by injecting it. The{' '}
+          <code className="text-mint">&lt;rune-qr&gt;</code> Web Component (from{' '}
+          <code className="text-mint">@kroszborg/rune-wc</code>) also works anywhere custom elements
+          do.
+        </p>
+        <pre className="overflow-x-auto rounded-[12px] border border-line bg-panel p-4 font-mono text-[13px] leading-relaxed text-ink">
+          <code>{`import { toSVGString } from '@kroszborg/rune';
+const svg = toSVGString({ value: 'https://example.com', dots: { style: 'rounded' } });
+
+// Svelte
+{@html svg}
+
+// Solid
+<div innerHTML={svg} />
+
+// Astro
+<Fragment set:html={svg} />
+
+// Angular (bypass sanitizer once)
+// this.svg = sanitizer.bypassSecurityTrustHtml(toSVGString({...}))
+<div [innerHTML]="svg"></div>
+
+// Lit / Alpine / plain HTML - register the element, then:
+<rune-qr value="https://example.com" dot-style="rounded"></rune-qr>`}</code>
+        </pre>
+      </section>
+
+      <section className="mb-12">
         <h2 className="mb-4 text-2xl">RuneOptions</h2>
         <p className="mb-4 text-ink-soft">
           The single options object accepted by every renderer and adapter.
