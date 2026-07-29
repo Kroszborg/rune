@@ -42,7 +42,12 @@ function attrsToOptions(el: Element, override?: Partial<RenderOptions>): RenderO
  *
  * Advanced usage: set the `.options` property to a full {@link RenderOptions}.
  */
-export class RuneQRElement extends HTMLElement {
+// Extend a real HTMLElement in the browser, or a harmless stub server-side, so
+// this module can be imported during SSR / in Node without a ReferenceError.
+const ElementBase: typeof HTMLElement =
+  typeof HTMLElement !== 'undefined' ? HTMLElement : (class {} as unknown as typeof HTMLElement);
+
+export class RuneQRElement extends ElementBase {
   static get observedAttributes(): string[] {
     return [
       'value',
