@@ -1,0 +1,41 @@
+name: Release
+
+# Publish all @kroszborg/* packages to npm when you push a version tag, e.g.:
+#   pnpm -r exec npm version 1.0.0 --no-git-tag-version   # bump every package
+#   git commit -am "release: v1.0.0" && git tag v1.0.0 && git push --follow-tags
+#
+# Requires an npm automation token in the repo:
+#   Settings → Secrets and variables → Actions → New secret → name: NPM_TOKEN
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+
+      - name: Test
+        run: pnpm test
+
+      - name: Publish to npm
+        run: pnpm -r --filter "./packages/*" publish --no-git-checks --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
