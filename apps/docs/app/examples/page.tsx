@@ -94,8 +94,8 @@ export default function Examples() {
       <p className="eyebrow mb-2">Examples</p>
       <h1 className="mb-3 text-4xl">A gallery of the possible.</h1>
       <p className="mb-10 max-w-xl text-ink-soft">
-        Every code below is one line — a preset or a small options object. All are verified
-        scannable in CI.
+        Every code below is one line: a preset or a small options object. All are verified scannable
+        in CI.
       </p>
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

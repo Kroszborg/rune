@@ -1,15 +1,15 @@
 import bench from '@/lib/benchmark.json';
 
-export const metadata = { title: 'Benchmark — Rune' };
+export const metadata = { title: 'Benchmark - Rune' };
 
 const LIBS = ['Rune', 'qrcode.react', 'qr-code-styling', 'react-qr-code'];
 
-// Feature matrix — verifiable capability comparison (not performance).
+// Feature matrix - verifiable capability comparison (not performance).
 const FEATURES: Array<[string, (boolean | string)[]]> = [
   ['SVG output', [true, true, true, true]],
   ['PNG / JPEG / WebP export', ['PNG·JPEG·WebP', 'PNG', 'PNG', false]],
   ['PDF export', [true, false, false, false]],
-  ['toSVGString — sync, no DOM', [true, false, false, false]],
+  ['toSVGString - sync, no DOM', [true, false, false, false]],
   ['SSR / Edge safe', [true, true, false, true]],
   ['Zero dependencies (core)', [true, true, false, false]],
   ['Dot shape styles', ['8', false, '~6', false]],
@@ -17,8 +17,8 @@ const FEATURES: Array<[string, (boolean | string)[]]> = [
   ['Gradient fills', [true, false, true, false]],
   ['Frames + CTA text', [true, false, false, false]],
   ['Background image', [true, false, true, false]],
-  ['Logo — image', [true, true, true, false]],
-  ['Logo — framework node', [true, false, false, false]],
+  ['Logo - image', [true, true, true, false]],
+  ['Logo - framework node', [true, false, false, false]],
   ['Data builders (WiFi/vCard/…)', [true, false, false, false]],
   ['Frameworks', ['4', 'React', 'any', 'React']],
   ['Error correction level', [true, true, true, true]],
@@ -30,7 +30,7 @@ const FEATURES: Array<[string, (boolean | string)[]]> = [
 
 function Cell({ v }: { v: boolean | string }) {
   if (v === true) return <span className="text-mint">✓</span>;
-  if (v === false) return <span className="text-ink-faint">—</span>;
+  if (v === false) return <span className="text-ink-faint">-</span>;
   return <span className="text-ink">{v}</span>;
 }
 
@@ -45,7 +45,7 @@ function PerfSection() {
       <div className="glass p-6">
         <p className="eyebrow mb-1">Throughput</p>
         <h3 className="mb-4 font-sans text-base font-semibold tracking-normal text-ink">
-          SVG renders / second — unique input, higher is better
+          SVG renders / second - unique input, higher is better
         </h3>
         <div className="flex flex-col gap-3">
           {renderers
@@ -77,7 +77,7 @@ function PerfSection() {
         <div className="glass p-6">
           <p className="eyebrow mb-1">SSR latency</p>
           <h3 className="mb-4 font-sans text-base font-semibold tracking-normal text-ink">
-            ms per render — lower is better
+            ms per render - lower is better
           </h3>
           <table className="w-full text-left text-sm">
             <thead>
@@ -139,7 +139,7 @@ export default function Benchmark() {
       <p className="eyebrow mb-2">Benchmark</p>
       <h1 className="mb-3 text-4xl">How Rune compares.</h1>
       <p className="mb-3 max-w-2xl text-ink-soft">
-        Real, in-process measurements against the popular React QR libraries — no synthetic or
+        Real, in-process measurements against the popular React QR libraries - no synthetic or
         placeholder numbers. Reproduce them yourself with{' '}
         <code className="text-mint">pnpm bench</code> (source in{' '}
         <code className="text-mint">/bench</code>).

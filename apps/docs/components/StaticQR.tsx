@@ -1,7 +1,7 @@
 import { type RenderOptions, toSVGString } from '@kroszborg/rune';
 
 /**
- * Server-rendered QR (no hooks) — safe in React Server Components.
+ * Server-rendered QR (no hooks) - safe in React Server Components.
  *
  * The core already namespaces gradient ids per distinct QR, so multiple codes
  * on one page never cross-reference; no extra id handling is needed here.

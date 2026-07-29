@@ -10,14 +10,23 @@ export function Footer() {
             Pure SVG · Zero dependencies · Built from scratch per ISO/IEC 18004.
           </p>
         </div>
-        <div className="flex items-center gap-5 text-sm text-ink-soft">
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-ink-soft">
           <a className="link-ul" href="https://github.com/Kroszborg/rune">
             GitHub
           </a>
           <a className="link-ul" href="https://www.npmjs.com/package/@kroszborg/rune">
             npm
           </a>
-          <span className="text-ink-faint">© 2026 Abhiman Panwar · MIT</span>
+          <a className="link-ul" href="https://www.kroszborg.co/" target="_blank" rel="noreferrer">
+            Portfolio
+          </a>
+          <span className="text-ink-faint">
+            Built by{' '}
+            <a className="link-ul text-ink-soft" href="https://www.kroszborg.co/">
+              Abhiman Panwar
+            </a>{' '}
+            · MIT
+          </span>
         </div>
       </div>
     </footer>

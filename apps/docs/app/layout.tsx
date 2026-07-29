@@ -5,11 +5,11 @@ import { display, sans } from '@/lib/fonts';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Rune — lightweight, fully customizable QR codes',
+  title: 'Rune - lightweight, fully customizable QR codes',
   description:
     'Framework-agnostic QR code library. Pure SVG, zero dependencies, built from scratch per ISO/IEC 18004. React, Vue, and vanilla. Gradients, custom shapes, logos, frames, and PNG/PDF export.',
   metadataBase: new URL('https://rune.kroszborg.co'),
-  openGraph: { title: 'Rune — customizable QR codes', type: 'website' },
+  openGraph: { title: 'Rune - customizable QR codes', type: 'website' },
 };
 
 // Set the theme before paint to avoid a flash.

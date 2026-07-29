@@ -1,6 +1,6 @@
 import { InstallCommand } from '@/components/CopyButton';
 
-export const metadata = { title: 'API Reference — Rune' };
+export const metadata = { title: 'API Reference - Rune' };
 
 function Row({ prop, type, def, desc }: { prop: string; type: string; def: string; desc: string }) {
   return (
@@ -56,7 +56,7 @@ export default function Docs() {
       <section className="mb-12">
         <h2 className="mb-4 text-2xl">Packages</h2>
         <p className="mb-4 text-ink-soft">
-          Install only what you need — they all share one options API.
+          Install only what you need - they all share one options API.
         </p>
         <div className="overflow-x-auto rounded-[12px] border border-line bg-panel">
           <table className="w-full min-w-[560px] border-collapse text-left">
@@ -68,16 +68,16 @@ export default function Docs() {
                 ],
                 [
                   '@kroszborg/rune-react',
-                  'React <QRCode> component (web). Also the path for React Native — see below.',
+                  'React <QRCode> component (web). Also the path for React Native - see below.',
                 ],
                 ['@kroszborg/rune-vue', 'Vue 3 <QRCode> component.'],
                 [
                   '@kroszborg/rune-wc',
-                  'Vanilla renderRune() + a <rune-qr> Web Component — no framework.',
+                  'Vanilla renderRune() + a <rune-qr> Web Component - no framework.',
                 ],
                 [
                   '@kroszborg/rune-decode',
-                  'From-scratch QR decoder: read a QR back from a module matrix or image, with Reed–Solomon correction.',
+                  'From-scratch QR decoder: read a QR back from a module matrix or image, with Reed-Solomon correction.',
                 ],
                 [
                   '@kroszborg/rune-cli',
@@ -127,19 +127,19 @@ export default () => <SvgXml xml={svg} width={256} height={256} />;`}</code>
           The single options object accepted by every renderer and adapter.
         </p>
         <Table>
-          <Row prop="value" type="string" def="—" desc="Data to encode (required)." />
+          <Row prop="value" type="string" def="-" desc="Data to encode (required)." />
           <Row prop="size" type="number" def="256" desc="Output width/height in px." />
           <Row prop="margin" type="number" def="4" desc="Quiet zone in modules." />
           <Row
             prop="dots"
             type="{ style, color, gradient }"
-            def="—"
+            def="-"
             desc="Data-module style and fill."
           />
           <Row
             prop="corners"
             type="CornerOptions"
-            def="—"
+            def="-"
             desc="Finder ring + core styles/fills."
           />
           <Row
@@ -148,18 +148,18 @@ export default () => <SvgXml xml={svg} width={256} height={256} />;`}</code>
             def="'#ffffff'"
             desc="Color, gradient, or image. 'transparent' accepted."
           />
-          <Row prop="logo" type="LogoOptions" def="—" desc="Center logo; auto-clamped per ECL." />
-          <Row prop="frame" type="FrameOptions" def="—" desc="Outer frame + CTA text." />
+          <Row prop="logo" type="LogoOptions" def="-" desc="Center logo; auto-clamped per ECL." />
+          <Row prop="frame" type="FrameOptions" def="-" desc="Outer frame + CTA text." />
           <Row
             prop="qr"
             type="{ errorCorrectionLevel, version, mask }"
-            def="—"
+            def="-"
             desc="Encoding controls."
           />
           <Row
             prop="preset"
             type="PresetName"
-            def="—"
+            def="-"
             desc="Named base style; explicit options win."
           />
           <Row prop="ariaLabel" type="string" def="'QR code: {value}'" desc="Accessible label." />

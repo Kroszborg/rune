@@ -3,7 +3,7 @@ import { Reveal } from '@/components/Reveal';
 import { StaticQR } from '@/components/StaticQR';
 import Link from 'next/link';
 
-// The hero's job is to show the *range* of customization — one payload, four
+// The hero's job is to show the *range* of customization - one payload, four
 // visibly different treatments. All are real presets, all verified scannable.
 const SHOWCASE = [
   { preset: 'mint', label: 'gradient' },
@@ -13,7 +13,7 @@ const SHOWCASE = [
 ] as const;
 
 const FEATURES = [
-  ['Pure SVG', 'No canvas, no raster. Scales perfectly at any resolution — print or screen.'],
+  ['Pure SVG', 'No canvas, no raster. Scales perfectly at any resolution - print or screen.'],
   [
     'Zero dependencies',
     'QR encoding built from scratch per ISO/IEC 18004. The core has no runtime deps.',
@@ -22,13 +22,13 @@ const FEATURES = [
     'Four frameworks',
     'One agnostic engine, thin wrappers for React, Vue, and a <rune-qr> Web Component.',
   ],
-  ['Every shape', 'Eight dot styles, five finder rings, three finder cores — mix freely.'],
+  ['Every shape', 'Eight dot styles, five finder rings, three finder cores - mix freely.'],
   [
     'Gradients & frames',
     'Linear/radial gradients per element, background images, frames with CTA text.',
   ],
   ['Logos, safely', 'Embed any image or React node; size auto-clamped per ECL to stay scannable.'],
-  ['Data builders', 'WiFi, vCard, email, SMS, geo, calendar, crypto — correctly escaped for you.'],
+  ['Data builders', 'WiFi, vCard, email, SMS, geo, calendar, crypto - correctly escaped for you.'],
   ['Export anywhere', 'toSVGString (sync/SSR), plus PNG · JPEG · WebP · PDF via optional peers.'],
 ];
 
@@ -44,8 +44,8 @@ export default function Home() {
           <span className="serif-italic text-mint">fully</span> under your control.
         </h1>
         <p className="rise rise-2 max-w-xl text-lg text-ink-soft">
-          Rune is a lightweight, fully customizable QR code library. Custom shapes, gradients, logos
-          and frames — clean, scannable, and built from scratch.
+          Rune is a lightweight, fully customizable QR code library. Custom shapes, gradients,
+          logos, and frames. Clean, scannable, and built from scratch.
         </p>
 
         <div className="rise rise-3 w-full max-w-md">
@@ -91,7 +91,7 @@ export default function Home() {
           <div className="mb-10 flex items-end justify-between">
             <div>
               <p className="eyebrow mb-2">What&apos;s included</p>
-              <h2 className="text-3xl sm:text-4xl">Everything a QR needs — and more.</h2>
+              <h2 className="text-3xl sm:text-4xl">Everything a QR needs, and more.</h2>
             </div>
           </div>
           <div className="grid gap-px overflow-hidden rounded-[16px] border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
@@ -119,9 +119,9 @@ export default function Home() {
               More frameworks, more styles, more output.
             </h2>
             <div className="grid gap-6 text-sm sm:grid-cols-3">
-              <Stat n="4" label="frameworks — React, Vue, vanilla, Web Component" />
+              <Stat n="4" label="frameworks - React, Vue, vanilla, Web Component" />
               <Stat n="8 × 5" label="dot styles × finder ring styles, freely mixed" />
-              <Stat n="5" label="output formats — SVG, PNG, JPEG, WebP, PDF" />
+              <Stat n="5" label="output formats - SVG, PNG, JPEG, WebP, PDF" />
             </div>
           </div>
         </section>

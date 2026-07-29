@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 /**
  * Rune wordmark. The mark is a stylized QR finder pattern (the square-in-square
- * corner marker every QR code has) — instantly reads as "QR", and is distinct
+ * corner marker every QR code has) - instantly reads as "QR", and is distinct
  * from other projects' logos.
  */
 export function Brand() {
