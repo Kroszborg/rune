@@ -5,7 +5,7 @@ import { display, sans } from '@/lib/fonts';
 import type { Metadata } from 'next';
 
 const description =
-  'A lightweight, fully customizable QR code library. Pure SVG, zero dependencies, built from scratch per ISO/IEC 18004. Custom shapes, gradients, logos, and frames, for React, Vue, and vanilla.';
+  'A lightweight, fully customizable QR code library. Custom shapes, gradients, logos, and frames, for React, Vue, and vanilla. Pure SVG, zero deps.';
 
 export const metadata: Metadata = {
   title: 'Rune - lightweight, fully customizable QR codes',
