@@ -4,12 +4,25 @@ import { Nav } from '@/components/Nav';
 import { display, sans } from '@/lib/fonts';
 import type { Metadata } from 'next';
 
+const description =
+  'A lightweight, fully customizable QR code library. Pure SVG, zero dependencies, built from scratch per ISO/IEC 18004. Custom shapes, gradients, logos, and frames, for React, Vue, and vanilla.';
+
 export const metadata: Metadata = {
   title: 'Rune - lightweight, fully customizable QR codes',
-  description:
-    'Framework-agnostic QR code library. Pure SVG, zero dependencies, built from scratch per ISO/IEC 18004. React, Vue, and vanilla. Gradients, custom shapes, logos, frames, and PNG/PDF export.',
+  description,
   metadataBase: new URL('https://rune.kroszborg.co'),
-  openGraph: { title: 'Rune - customizable QR codes', type: 'website' },
+  openGraph: {
+    title: 'Rune - lightweight, fully customizable QR codes',
+    description,
+    url: 'https://rune.kroszborg.co',
+    siteName: 'Rune',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Rune - lightweight, fully customizable QR codes',
+    description,
+  },
 };
 
 // Set the theme before paint to avoid a flash.

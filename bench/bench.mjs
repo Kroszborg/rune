@@ -53,18 +53,23 @@ function percentile(arr, p) {
 }
 const round = (n, d = 2) => Math.round(n * 10 ** d) / 10 ** d;
 
-// ── 1) Throughput: unique input each call, fixed time window ────────────────
-function throughput(fn, windowMs = 2000) {
-  // Warm up.
-  for (let i = 0; i < 50; i++) fn(`warmup-${i}`);
-  let ops = 0;
-  const start = performance.now();
-  while (performance.now() - start < windowMs) {
-    fn(`https://ex.com/${ops}-${Math.floor(ops * 2654435761) % 100000}`);
-    ops++;
+// ── 1) Throughput: unique input each call, best of N short windows ──────────
+// Best-of-N reports peak sustained throughput, which is far less sensitive to
+// transient machine load than a single window.
+function throughput(fn, windowMs = 800, runs = 5) {
+  for (let i = 0; i < 200; i++) fn(`warmup-${i}`); // warm the JIT
+  let best = 0;
+  for (let r = 0; r < runs; r++) {
+    let ops = 0;
+    const start = performance.now();
+    while (performance.now() - start < windowMs) {
+      fn(`https://ex.com/${r}-${ops}-${Math.floor(ops * 2654435761) % 100000}`);
+      ops++;
+    }
+    const rps = ops / ((performance.now() - start) / 1000);
+    if (rps > best) best = rps;
   }
-  const elapsed = (performance.now() - start) / 1000;
-  return Math.round(ops / elapsed);
+  return Math.round(best);
 }
 
 // ── 2) SSR latency: per-payload render time ─────────────────────────────────

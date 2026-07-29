@@ -17,6 +17,7 @@
     "lint": "biome check .",
     "format": "biome format --write .",
     "typecheck": "turbo run typecheck",
+    "bench": "pnpm --filter bench bench",
     "clean": "turbo run clean && rimraf node_modules",
     "changeset": "changeset",
     "release": "turbo run build && changeset publish"
