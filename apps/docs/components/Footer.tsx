@@ -11,7 +11,7 @@ export function Footer() {
           </p>
         </div>
         <div className="flex items-center gap-5 text-sm text-ink-soft">
-          <a className="link-ul" href="https://github.com/kroszborg/rune">
+          <a className="link-ul" href="https://github.com/Kroszborg/rune">
             GitHub
           </a>
           <a className="link-ul" href="https://www.npmjs.com/package/@kroszborg/rune">

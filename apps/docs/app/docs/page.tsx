@@ -4,25 +4,31 @@ export const metadata = { title: 'API Reference — Rune' };
 
 function Row({ prop, type, def, desc }: { prop: string; type: string; def: string; desc: string }) {
   return (
-    <tr className="border-b border-line align-top">
-      <td className="py-2.5 pr-4 font-mono text-[13px] text-mint">{prop}</td>
-      <td className="py-2.5 pr-4 font-mono text-[12px] text-ink-soft">{type}</td>
-      <td className="py-2.5 pr-4 font-mono text-[12px] text-ink-faint">{def}</td>
-      <td className="py-2.5 text-sm text-ink-soft">{desc}</td>
+    <tr className="border-b border-line align-top last:border-0">
+      <td className="whitespace-nowrap py-3 pl-4 pr-8 align-top font-mono text-[13px] text-mint">
+        {prop}
+      </td>
+      <td className="whitespace-nowrap py-3 pr-8 align-top font-mono text-[12px] text-ink-soft">
+        {type}
+      </td>
+      <td className="whitespace-nowrap py-3 pr-8 align-top font-mono text-[12px] text-ink-faint">
+        {def}
+      </td>
+      <td className="py-3 pr-4 align-top text-sm leading-relaxed text-ink-soft">{desc}</td>
     </tr>
   );
 }
 
 function Table({ children }: { children: React.ReactNode }) {
   return (
-    <div className="overflow-x-auto rounded-[12px] border border-line">
-      <table className="w-full min-w-[640px] border-collapse text-left">
+    <div className="overflow-x-auto rounded-[12px] border border-line bg-panel">
+      <table className="w-full min-w-[720px] border-collapse text-left">
         <thead>
           <tr className="border-b border-line-strong text-xs text-ink-faint">
-            <th className="py-2.5 pr-4 font-medium">Prop</th>
-            <th className="py-2.5 pr-4 font-medium">Type</th>
-            <th className="py-2.5 pr-4 font-medium">Default</th>
-            <th className="py-2.5 font-medium">Description</th>
+            <th className="py-3 pl-4 pr-8 font-medium">Prop</th>
+            <th className="py-3 pr-8 font-medium">Type</th>
+            <th className="py-3 pr-8 font-medium">Default</th>
+            <th className="py-3 pr-4 font-medium">Description</th>
           </tr>
         </thead>
         <tbody>{children}</tbody>
@@ -45,6 +51,74 @@ export default function Docs() {
           <InstallCommand command="pnpm add @kroszborg/rune-wc" />
           <InstallCommand command="pnpm add @kroszborg/rune   # core / SSR string API" />
         </div>
+      </section>
+
+      <section className="mb-12">
+        <h2 className="mb-4 text-2xl">Packages</h2>
+        <p className="mb-4 text-ink-soft">
+          Install only what you need — they all share one options API.
+        </p>
+        <div className="overflow-x-auto rounded-[12px] border border-line bg-panel">
+          <table className="w-full min-w-[560px] border-collapse text-left">
+            <tbody>
+              {[
+                [
+                  '@kroszborg/rune',
+                  'Core engine: encoder + SVG renderer + export helpers + data builders + presets. Framework-agnostic, zero runtime deps. Use its toSVGString for SSR/any environment.',
+                ],
+                [
+                  '@kroszborg/rune-react',
+                  'React <QRCode> component (web). Also the path for React Native — see below.',
+                ],
+                ['@kroszborg/rune-vue', 'Vue 3 <QRCode> component.'],
+                [
+                  '@kroszborg/rune-wc',
+                  'Vanilla renderRune() + a <rune-qr> Web Component — no framework.',
+                ],
+                [
+                  '@kroszborg/rune-decode',
+                  'From-scratch QR decoder: read a QR back from a module matrix or image, with Reed–Solomon correction.',
+                ],
+                [
+                  '@kroszborg/rune-cli',
+                  'The `rune` CLI: generate SVG/PNG/PDF or decode an image from the terminal.',
+                ],
+              ].map(([name, desc]) => (
+                <tr key={name} className="border-b border-line align-top last:border-0">
+                  <td className="whitespace-nowrap py-3 pl-4 pr-8 align-top font-mono text-[13px] text-mint">
+                    {name}
+                  </td>
+                  <td className="py-3 pr-4 align-top text-sm leading-relaxed text-ink-soft">
+                    {desc}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section className="mb-12">
+        <h2 className="mb-4 text-2xl">React Native</h2>
+        <p className="mb-4 text-ink-soft">
+          The web <code className="text-mint">rune-react</code> component renders a DOM{' '}
+          <code>&lt;svg&gt;</code>, which React Native doesn&apos;t have. In RN, use the core{' '}
+          <code className="text-mint">toSVGString</code> with{' '}
+          <a
+            className="link-ul text-ink"
+            href="https://github.com/software-mansion/react-native-svg"
+          >
+            react-native-svg
+          </a>
+          :
+        </p>
+        <pre className="overflow-x-auto rounded-[12px] border border-line bg-panel p-4 font-mono text-[13px] leading-relaxed text-ink">
+          <code>{`import { SvgXml } from 'react-native-svg';
+import { toSVGString } from '@kroszborg/rune';
+
+const svg = toSVGString({ value: 'https://example.com', dots: { style: 'rounded' } });
+export default () => <SvgXml xml={svg} width={256} height={256} />;`}</code>
+        </pre>
       </section>
 
       <section className="mb-12">
@@ -98,7 +172,7 @@ export default function Docs() {
           <div className="glass p-5">
             <div className="mb-1 font-medium text-ink">DotStyle</div>
             <code className="text-sm text-ink-soft">
-              square · dot · rounded · classy · diamond · star
+              square · dot · rounded · extra-rounded · classy · classy-rounded · diamond · star
             </code>
           </div>
           <div className="glass p-5">

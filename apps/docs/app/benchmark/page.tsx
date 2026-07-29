@@ -12,8 +12,8 @@ const FEATURES: Array<[string, (boolean | string)[]]> = [
   ['toSVGString — sync, no DOM', [true, false, false, false]],
   ['SSR / Edge safe', [true, true, false, true]],
   ['Zero dependencies (core)', [true, true, false, false]],
-  ['Dot shape styles', ['6', false, '~6', false]],
-  ['Finder/corner styles', ['5×3', false, 'yes', false]],
+  ['Dot shape styles', ['8', false, '~6', false]],
+  ['Finder/corner styles', ['5 × 3', false, '3 × 2', false]],
   ['Gradient fills', [true, false, true, false]],
   ['Frames + CTA text', [true, false, false, false]],
   ['Background image', [true, false, true, false]],
@@ -138,11 +138,17 @@ export default function Benchmark() {
     <div className="mx-auto max-w-5xl px-6 py-14">
       <p className="eyebrow mb-2">Benchmark</p>
       <h1 className="mb-3 text-4xl">How Rune compares.</h1>
-      <p className="mb-10 max-w-2xl text-ink-soft">
-        Performance measured in-process against the popular React QR libraries, plus a feature
-        matrix. Numbers come from the reproducible harness in{' '}
-        <code className="text-mint">/bench</code> — re-run with{' '}
-        <code className="text-mint">pnpm bench</code>.
+      <p className="mb-3 max-w-2xl text-ink-soft">
+        Real, in-process measurements against the popular React QR libraries — no synthetic or
+        placeholder numbers. Reproduce them yourself with{' '}
+        <code className="text-mint">pnpm bench</code> (source in{' '}
+        <code className="text-mint">/bench</code>).
+      </p>
+      <p className="mb-10 max-w-2xl text-sm text-ink-faint">
+        <span className="text-mint">toSVGString</span> is the apples-to-apples SVG-generation path,
+        and it&apos;s the fastest here. The React adapter is on par with qrcode.react while
+        rendering a fully-styled SVG element. Absolute numbers depend on the machine (measured on
+        Node {bench.node}); the ranking is what matters.
       </p>
 
       <PerfSection />

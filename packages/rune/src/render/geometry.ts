@@ -90,11 +90,22 @@ export function dataModulePath(
       return starPath(x, y, cell);
     case 'rounded': {
       const r = cell / 2;
+      // Fluid: round a corner only when both adjacent modules are absent.
       return roundedRectPath(x, y, cell, cell, {
         tl: !nb.n && !nb.w ? r : 0,
         tr: !nb.n && !nb.e ? r : 0,
         br: !nb.s && !nb.e ? r : 0,
         bl: !nb.s && !nb.w ? r : 0,
+      });
+    }
+    case 'extra-rounded': {
+      const r = cell / 2;
+      // Rounder: round a corner when either adjacent module is absent.
+      return roundedRectPath(x, y, cell, cell, {
+        tl: !nb.n || !nb.w ? r : 0,
+        tr: !nb.n || !nb.e ? r : 0,
+        br: !nb.s || !nb.e ? r : 0,
+        bl: !nb.s || !nb.w ? r : 0,
       });
     }
     case 'classy': {
@@ -105,6 +116,15 @@ export function dataModulePath(
         tr: 0,
         br: !nb.s && !nb.e ? r : 0,
         bl: 0,
+      });
+    }
+    case 'classy-rounded': {
+      // Classy diagonal, softened: big radius on TL/BR, gentle on TR/BL.
+      return roundedRectPath(x, y, cell, cell, {
+        tl: !nb.n && !nb.w ? cell / 2 : 0,
+        tr: !nb.n && !nb.e ? cell * 0.28 : 0,
+        br: !nb.s && !nb.e ? cell / 2 : 0,
+        bl: !nb.s && !nb.w ? cell * 0.28 : 0,
       });
     }
   }

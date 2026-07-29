@@ -27,7 +27,7 @@ export function Nav() {
         </nav>
         <div className="flex items-center gap-2">
           <a
-            href="https://github.com/kroszborg/rune"
+            href="https://github.com/Kroszborg/rune"
             target="_blank"
             rel="noreferrer"
             className="hidden rounded-[10px] px-3 py-2 text-sm text-ink-soft transition-colors hover:bg-paper-2 hover:text-ink sm:block"

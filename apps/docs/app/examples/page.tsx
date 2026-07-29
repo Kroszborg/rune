@@ -47,6 +47,24 @@ const GALLERY: Array<{ title: string; note: string; options: RenderOptions }> = 
       frame: { style: 'rounded', text: 'SCAN ME' },
     },
   },
+  {
+    title: 'Extra-rounded',
+    note: "dots: 'extra-rounded'",
+    options: {
+      value: V,
+      dots: { style: 'extra-rounded', color: '#0b0b0f' },
+      corners: { square: { style: 'extra-rounded' }, dot: { style: 'dot' } },
+    },
+  },
+  {
+    title: 'Classy rounded',
+    note: "dots: 'classy-rounded'",
+    options: {
+      value: V,
+      dots: { style: 'classy-rounded', color: '#1f2937' },
+      corners: { square: { style: 'leaf' } },
+    },
+  },
 ];
 
 const RECIPES: Array<{ title: string; code: string; options: RenderOptions }> = [

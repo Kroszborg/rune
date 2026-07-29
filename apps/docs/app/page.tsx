@@ -1,4 +1,5 @@
 import { InstallCommand } from '@/components/CopyButton';
+import { Reveal } from '@/components/Reveal';
 import { StaticQR } from '@/components/StaticQR';
 import Link from 'next/link';
 
@@ -21,7 +22,7 @@ const FEATURES = [
     'Four frameworks',
     'One agnostic engine, thin wrappers for React, Vue, and a <rune-qr> Web Component.',
   ],
-  ['Every shape', 'Six dot styles, five finder rings, three finder cores — mix freely.'],
+  ['Every shape', 'Eight dot styles, five finder rings, three finder cores — mix freely.'],
   [
     'Gradients & frames',
     'Linear/radial gradients per element, background images, frames with CTA text.',
@@ -36,22 +37,22 @@ export default function Home() {
     <>
       {/* Hero */}
       <section className="mx-auto flex max-w-6xl flex-col items-center gap-10 px-6 pt-20 pb-16 text-center sm:pt-28">
-        <p className="eyebrow">Framework-agnostic · ISO/IEC 18004</p>
-        <h1 className="max-w-3xl text-[2.75rem] leading-[1.02] sm:text-6xl">
+        <p className="eyebrow rise rise-1">Framework-agnostic · ISO/IEC 18004</p>
+        <h1 className="rise rise-1 max-w-3xl text-[2.75rem] leading-[1.02] sm:text-6xl">
           Beautiful QR codes,
           <br />
           <span className="serif-italic text-mint">fully</span> under your control.
         </h1>
-        <p className="max-w-xl text-lg text-ink-soft">
+        <p className="rise rise-2 max-w-xl text-lg text-ink-soft">
           Rune is a lightweight, fully customizable QR code library. Custom shapes, gradients, logos
           and frames — clean, scannable, and built from scratch.
         </p>
 
-        <div className="w-full max-w-md">
+        <div className="rise rise-3 w-full max-w-md">
           <InstallCommand />
         </div>
 
-        <div className="flex flex-wrap items-center justify-center gap-3">
+        <div className="rise rise-3 flex flex-wrap items-center justify-center gap-3">
           <Link
             href="/playground"
             className="rounded-[11px] bg-signal px-5 py-3 text-sm font-semibold text-signal-contrast transition-opacity hover:opacity-90"
@@ -66,10 +67,10 @@ export default function Home() {
           </Link>
         </div>
 
-        <div className="mt-4 grid w-full max-w-3xl grid-cols-2 gap-4 sm:grid-cols-4">
+        <div className="rise rise-4 mt-4 grid w-full max-w-3xl grid-cols-2 gap-4 sm:grid-cols-4">
           {SHOWCASE.map((s) => (
             <figure key={s.label} className="flex flex-col items-center gap-3">
-              <div className="w-full rounded-[18px] border border-line bg-white p-4 transition-transform hover:-translate-y-1">
+              <div className="w-full rounded-[18px] border border-line bg-white p-4 transition-transform duration-300 ease-out hover:-translate-y-1.5">
                 <StaticQR
                   value="https://rune.kroszborg.co"
                   preset={s.preset}
@@ -85,37 +86,46 @@ export default function Home() {
       </section>
 
       {/* Features */}
-      <section className="mx-auto max-w-6xl px-6 py-16">
-        <div className="mb-10 flex items-end justify-between">
-          <div>
-            <p className="eyebrow mb-2">What&apos;s included</p>
-            <h2 className="text-3xl sm:text-4xl">Everything a QR needs — and more.</h2>
-          </div>
-        </div>
-        <div className="grid gap-px overflow-hidden rounded-[16px] border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
-          {FEATURES.map(([title, body]) => (
-            <div key={title} className="bg-paper p-6">
-              <h3 className="mb-2 font-sans text-base font-semibold tracking-normal text-ink">
-                {title}
-              </h3>
-              <p className="text-sm leading-relaxed text-ink-soft">{body}</p>
+      <Reveal>
+        <section className="mx-auto max-w-6xl px-6 py-16">
+          <div className="mb-10 flex items-end justify-between">
+            <div>
+              <p className="eyebrow mb-2">What&apos;s included</p>
+              <h2 className="text-3xl sm:text-4xl">Everything a QR needs — and more.</h2>
             </div>
-          ))}
-        </div>
-      </section>
+          </div>
+          <div className="grid gap-px overflow-hidden rounded-[16px] border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
+            {FEATURES.map(([title, body]) => (
+              <div
+                key={title}
+                className="bg-paper p-6 transition-colors duration-300 hover:bg-paper-2"
+              >
+                <h3 className="mb-2 font-sans text-base font-semibold tracking-normal text-ink">
+                  {title}
+                </h3>
+                <p className="text-sm leading-relaxed text-ink-soft">{body}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      </Reveal>
 
       {/* Compare */}
-      <section className="mx-auto max-w-6xl px-6 pb-24">
-        <div className="glass p-8 sm:p-10">
-          <p className="eyebrow mb-2">Why Rune</p>
-          <h2 className="mb-6 text-2xl sm:text-3xl">More frameworks, more styles, more output.</h2>
-          <div className="grid gap-6 text-sm sm:grid-cols-3">
-            <Stat n="4" label="frameworks — React, Vue, vanilla, Web Component" />
-            <Stat n="6 × 5" label="dot styles × finder ring styles, freely mixed" />
-            <Stat n="5" label="output formats — SVG, PNG, JPEG, WebP, PDF" />
+      <Reveal>
+        <section className="mx-auto max-w-6xl px-6 pb-24">
+          <div className="glass p-8 sm:p-10">
+            <p className="eyebrow mb-2">Why Rune</p>
+            <h2 className="mb-6 text-2xl sm:text-3xl">
+              More frameworks, more styles, more output.
+            </h2>
+            <div className="grid gap-6 text-sm sm:grid-cols-3">
+              <Stat n="4" label="frameworks — React, Vue, vanilla, Web Component" />
+              <Stat n="8 × 5" label="dot styles × finder ring styles, freely mixed" />
+              <Stat n="5" label="output formats — SVG, PNG, JPEG, WebP, PDF" />
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </Reveal>
     </>
   );
 }

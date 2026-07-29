@@ -1,7 +1,15 @@
 import type { Ecl } from '../core/types.js';
 
-/** Data-module shapes. `rounded` connects adjacent modules (fluid/snake). */
-export type DotStyle = 'square' | 'dot' | 'rounded' | 'classy' | 'diamond' | 'star';
+/** Data-module shapes. `rounded`/`extra-rounded` connect adjacent modules (fluid). */
+export type DotStyle =
+  | 'square'
+  | 'dot'
+  | 'rounded'
+  | 'extra-rounded'
+  | 'classy'
+  | 'classy-rounded'
+  | 'diamond'
+  | 'star';
 
 /** Outer 7×7 finder ring shapes. */
 export type FinderSquareStyle = 'square' | 'rounded' | 'extra-rounded' | 'circle' | 'leaf';
