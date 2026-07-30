@@ -1,12 +1,21 @@
 {
   "name": "@kroszborg/rune-wc",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Vanilla JS + Web Component (<rune-qr>) for Rune — customizable QR codes with no framework.",
   "author": "Abhiman Panwar (@kroszborg)",
   "license": "MIT",
   "type": "module",
-  "sideEffects": ["**/register*"],
-  "keywords": ["qr", "qrcode", "web-component", "custom-element", "vanilla", "svg"],
+  "sideEffects": [
+    "**/register*"
+  ],
+  "keywords": [
+    "qr",
+    "qrcode",
+    "web-component",
+    "custom-element",
+    "vanilla",
+    "svg"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/Kroszborg/rune",
@@ -23,7 +32,9 @@
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",

@@ -1,12 +1,18 @@
 {
   "name": "@kroszborg/rune-react",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "React component for Rune — lightweight, fully customizable QR codes.",
   "author": "Abhiman Panwar (@kroszborg)",
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
-  "keywords": ["qr", "qrcode", "react", "svg", "component"],
+  "keywords": [
+    "qr",
+    "qrcode",
+    "react",
+    "svg",
+    "component"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/Kroszborg/rune",
@@ -23,7 +29,9 @@
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",

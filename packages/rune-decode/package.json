@@ -1,12 +1,19 @@
 {
   "name": "@kroszborg/rune-decode",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "From-scratch QR code decoder — module-matrix and image (RGBA) decoding with Reed–Solomon error correction.",
   "author": "Abhiman Panwar (@kroszborg)",
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
-  "keywords": ["qr", "qrcode", "decode", "decoder", "reed-solomon", "scanner"],
+  "keywords": [
+    "qr",
+    "qrcode",
+    "decode",
+    "decoder",
+    "reed-solomon",
+    "scanner"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/Kroszborg/rune",
@@ -23,7 +30,9 @@
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup",
     "test": "vitest run",
