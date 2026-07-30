@@ -26,6 +26,7 @@ describe('scan-back: rendered QR codes actually decode', () => {
     ['extra-rounded', { value, dots: { style: 'extra-rounded' } }],
     ['classy', { value, dots: { style: 'classy' } }],
     ['classy-rounded', { value, dots: { style: 'classy-rounded' } }],
+    ['leaf', { value, dots: { style: 'leaf' } }],
     [
       'gradient dots',
       {

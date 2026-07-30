@@ -89,6 +89,7 @@ const DOT_STYLES = [
   'extra-rounded',
   'classy',
   'classy-rounded',
+  'leaf',
   'diamond',
   'star',
 ] as const;
@@ -249,8 +250,9 @@ const svg = toSVGString({ value: 'https://example.com', dots: { style: 'rounded'
 
           <Section id="dots" title="Dot styles">
             <P>
-              Set with <Mono>dots.style</Mono>. Eight styles; <Mono>rounded</Mono> and{' '}
-              <Mono>extra-rounded</Mono> connect adjacent modules for a fluid look.
+              Set with <Mono>dots.style</Mono>. Nine styles; <Mono>rounded</Mono> and{' '}
+              <Mono>extra-rounded</Mono> connect adjacent modules for a fluid look, and{' '}
+              <Mono>leaf</Mono> gives each module a petal shape.
             </P>
             <div className="mb-4 grid grid-cols-2 gap-4 rounded-[16px] border border-line bg-panel p-6 sm:grid-cols-4">
               {DOT_STYLES.map((style) => (

@@ -11,6 +11,7 @@ const DOT_STYLES = [
   'extra-rounded',
   'classy',
   'classy-rounded',
+  'leaf',
   'diamond',
   'star',
 ] as const;

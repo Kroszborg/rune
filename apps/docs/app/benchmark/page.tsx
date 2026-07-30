@@ -12,7 +12,7 @@ const FEATURES: Array<[string, (boolean | string)[]]> = [
   ['toSVGString - sync, no DOM', [true, false, false, false]],
   ['SSR / Edge safe', [true, true, false, true]],
   ['Zero dependencies (core)', [true, true, false, false]],
-  ['Dot shape styles', ['8', false, '~6', false]],
+  ['Dot shape styles', ['9', false, '~6', false]],
   ['Finder/corner styles', ['5 × 3', false, '3 × 2', false]],
   ['Gradient fills', [true, false, true, false]],
   ['Frames + CTA text', [true, false, false, false]],

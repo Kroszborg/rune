@@ -22,7 +22,7 @@ const FEATURES = [
     'Any framework',
     'React, Vue, vanilla and a <rune-qr> Web Component. Everything else renders via toSVGString.',
   ],
-  ['Every shape', 'Eight dot styles, five finder rings, three finder cores - mix freely.'],
+  ['Every shape', 'Nine dot styles, five finder rings, three finder cores - mix freely.'],
   [
     'Gradients & frames',
     'Linear/radial gradients per element, background images, frames with CTA text.',
@@ -120,7 +120,7 @@ export default function Home() {
             </h2>
             <div className="grid gap-6 text-sm sm:grid-cols-3">
               <Stat n="4" label="frameworks - React, Vue, vanilla, Web Component" />
-              <Stat n="8 × 5" label="dot styles × finder ring styles, freely mixed" />
+              <Stat n="9 × 5" label="dot styles × finder ring styles, freely mixed" />
               <Stat n="5" label="output formats - SVG, PNG, JPEG, WebP, PDF" />
             </div>
           </div>

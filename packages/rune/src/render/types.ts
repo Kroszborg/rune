@@ -8,6 +8,7 @@ export type DotStyle =
   | 'extra-rounded'
   | 'classy'
   | 'classy-rounded'
+  | 'leaf'
   | 'diamond'
   | 'star';
 

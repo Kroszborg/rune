@@ -40,7 +40,7 @@ attributes + body for building a real `<svg>` in a framework (used by the adapte
 | `preset` | `PresetName` | — | Named base style |
 | `ariaLabel` | `string` | `QR code: {value}` | Accessible label |
 
-**Dot styles:** `square · dot · rounded · classy · diamond · star`
+**Dot styles:** `square · dot · rounded · extra-rounded · classy · classy-rounded · leaf · diamond · star`
 **Finder ring:** `square · rounded · extra-rounded · circle · leaf`
 **Finder core:** `square · rounded · dot`
 

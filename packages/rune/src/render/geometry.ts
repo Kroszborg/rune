@@ -127,6 +127,13 @@ export function dataModulePath(
         bl: !nb.s && !nb.w ? cell * 0.28 : 0,
       });
     }
+    case 'leaf': {
+      // Petal/leaf: two opposite corners fully rounded, the other two sharp.
+      // Fixed (not neighbour-aware) so each module reads as a distinct leaf,
+      // matching the 'leaf' finder-ring look.
+      const r = cell / 2;
+      return roundedRectPath(x, y, cell, cell, { tl: r, tr: 0, br: r, bl: 0 });
+    }
   }
 }
 
