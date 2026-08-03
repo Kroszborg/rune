@@ -5,14 +5,7 @@
   "author": "Abhiman Panwar (@kroszborg)",
   "license": "MIT",
   "type": "module",
-  "keywords": [
-    "qr",
-    "qrcode",
-    "cli",
-    "svg",
-    "png",
-    "generator"
-  ],
+  "keywords": ["qr", "qrcode", "cli", "svg", "png", "generator"],
   "repository": {
     "type": "git",
     "url": "https://github.com/Kroszborg/rune",
@@ -22,9 +15,7 @@
   "bin": {
     "rune": "./dist/cli.js"
   },
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "scripts": {
     "build": "tsup",
     "test": "vitest run",

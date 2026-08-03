@@ -5,17 +5,8 @@
   "author": "Abhiman Panwar (@kroszborg)",
   "license": "MIT",
   "type": "module",
-  "sideEffects": [
-    "**/register*"
-  ],
-  "keywords": [
-    "qr",
-    "qrcode",
-    "web-component",
-    "custom-element",
-    "vanilla",
-    "svg"
-  ],
+  "sideEffects": ["**/register*"],
+  "keywords": ["qr", "qrcode", "web-component", "custom-element", "vanilla", "svg"],
   "repository": {
     "type": "git",
     "url": "https://github.com/Kroszborg/rune",
@@ -32,9 +23,7 @@
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",

@@ -6,14 +6,7 @@
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
-  "keywords": [
-    "qr",
-    "qrcode",
-    "decode",
-    "decoder",
-    "reed-solomon",
-    "scanner"
-  ],
+  "keywords": ["qr", "qrcode", "decode", "decoder", "reed-solomon", "scanner"],
   "repository": {
     "type": "git",
     "url": "https://github.com/Kroszborg/rune",
@@ -30,9 +23,7 @@
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "scripts": {
     "build": "tsup",
     "test": "vitest run",

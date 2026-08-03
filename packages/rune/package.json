@@ -6,15 +6,7 @@
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
-  "keywords": [
-    "qr",
-    "qrcode",
-    "qr-code",
-    "svg",
-    "generator",
-    "iso-18004",
-    "zero-dependency"
-  ],
+  "keywords": ["qr", "qrcode", "qr-code", "svg", "generator", "iso-18004", "zero-dependency"],
   "repository": {
     "type": "git",
     "url": "https://github.com/Kroszborg/rune",
@@ -37,9 +29,7 @@
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
