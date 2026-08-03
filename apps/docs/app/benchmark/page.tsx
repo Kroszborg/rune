@@ -53,8 +53,8 @@ function PerfSection() {
             .map(([name, r]) => {
               const isRune = name.startsWith('Rune');
               return (
-                <div key={name} className="flex items-center gap-3">
-                  <span className="w-40 shrink-0 text-xs text-ink-soft">{name}</span>
+                <div key={name} className="flex items-center gap-2 sm:gap-3">
+                  <span className="w-24 shrink-0 text-xs text-ink-soft sm:w-40">{name}</span>
                   <div className="h-5 flex-1 overflow-hidden rounded-full bg-paper-2">
                     <div
                       className={`h-full rounded-full ${isRune ? 'bg-mint' : 'bg-line-strong'}`}
@@ -62,7 +62,7 @@ function PerfSection() {
                     />
                   </div>
                   <span
-                    className={`w-16 shrink-0 text-right font-mono text-xs ${isRune ? 'text-mint' : 'text-ink-soft'}`}
+                    className={`w-14 shrink-0 text-right font-mono text-xs sm:w-16 ${isRune ? 'text-mint' : 'text-ink-soft'}`}
                   >
                     {r.throughput.toLocaleString()}
                   </span>

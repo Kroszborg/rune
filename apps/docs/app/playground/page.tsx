@@ -199,17 +199,17 @@ export default function Playground() {
   };
 
   return (
-    <div className="mx-auto max-w-6xl px-6 py-14 [animation:fadeUp_.5s_ease-out]">
+    <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14 [animation:fadeUp_.5s_ease-out]">
       <p className="eyebrow mb-2">Playground</p>
-      <h1 className="mb-8 text-4xl">Try it live.</h1>
+      <h1 className="mb-8 text-3xl sm:text-4xl">Try it live.</h1>
 
-      <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
+      <div className="grid gap-6 lg:grid-cols-[1fr_360px] lg:gap-8">
         {/* Preview + code */}
-        <div className="flex flex-col gap-6">
-          <div className="grid min-h-[360px] place-items-center rounded-[20px] border border-line bg-panel p-8">
+        <div className="flex min-w-0 flex-col gap-6">
+          <div className="grid min-h-[300px] place-items-center rounded-[20px] border border-line bg-panel p-4 sm:min-h-[360px] sm:p-8">
             {/* Neutral card so both light- and dark-background codes stay visible */}
-            <div className="rounded-[16px] bg-[#f4f4f6] p-5 shadow-[0_1px_0_rgba(255,255,255,0.04)]">
-              <QRCode {...options} />
+            <div className="w-full max-w-[300px] rounded-[16px] bg-[#f4f4f6] p-4 shadow-[0_1px_0_rgba(255,255,255,0.04)] sm:p-5">
+              <QRCode {...options} className="block h-auto w-full" />
             </div>
           </div>
           <div className="flex flex-wrap gap-3">

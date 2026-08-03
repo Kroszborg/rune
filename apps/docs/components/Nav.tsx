@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Brand } from './Brand';
+import { MobileNav } from './MobileNav';
 import { ThemeToggle } from './ThemeToggle';
 
 const LINKS = [
@@ -30,11 +31,12 @@ export function Nav() {
             href="https://github.com/Kroszborg/rune"
             target="_blank"
             rel="noreferrer"
-            className="hidden rounded-[10px] px-3 py-2 text-sm text-ink-soft transition-colors hover:bg-paper-2 hover:text-ink sm:block"
+            className="hidden rounded-[10px] px-3 py-2 text-sm text-ink-soft transition-colors hover:bg-paper-2 hover:text-ink md:block"
           >
             GitHub
           </a>
           <ThemeToggle />
+          <MobileNav links={LINKS} />
         </div>
       </div>
     </header>
