@@ -228,9 +228,11 @@ const svg = toSVGString({ value: 'https://example.com', dots: { style: 'rounded'
                 ],
                 [
                   <code key="17">qr</code>,
-                  <code key="18">{'{ errorCorrectionLevel, version, mask, eci, boostEcl }'}</code>,
+                  <code key="18">
+                    {'{ errorCorrectionLevel, version, mask, eci, boostEcl, kanji }'}
+                  </code>,
                   '-',
-                  "Encoding controls. ECL accepts 'H', 'h' or 'high'; eci adds a UTF-8 header for strict readers.",
+                  "Encoding controls. ECL accepts 'H', 'h' or 'high'; eci adds a UTF-8 header; kanji (default on) packs Japanese text at 13 bits per character.",
                 ],
                 [
                   <code key="19">preset</code>,
@@ -341,8 +343,23 @@ const svg = toSVGString({ value: 'https://example.com', dots: { style: 'rounded'
                   <code key="13">corners.alignment.color / gradient</code>,
                   <code key="14">string | Gradient</code>,
                 ],
+                [
+                  <code key="15">corners.topLeft / topRight / bottomLeft</code>,
+                  <code key="16">{'{ square?, dot? }'}</code>,
+                ],
               ]}
             />
+            <P>
+              Each finder can be styled on its own: <Mono>corners.topLeft</Mono>,{' '}
+              <Mono>corners.topRight</Mono> and <Mono>corners.bottomLeft</Mono> take the same{' '}
+              <Mono>square</Mono> / <Mono>dot</Mono> shape and fill options and override the shared
+              ones for that corner only.
+            </P>
+            <Code>{`<QRCode value="..." corners={{
+  square: { style: 'rounded' },
+  topLeft: { square: { style: 'circle', color: '#0b6b4f' }, dot: { style: 'dot' } },
+  bottomLeft: { dot: { color: '#7a1f3d' } },
+}} />`}</Code>
             <P>
               Alignment patterns (versions 2 and up) are drawn as solid shapes by default rather
               than in the dot style, because decoders locate them to correct perspective and a
@@ -568,8 +585,9 @@ background={{ gradient: { type: 'radial', stops: [...] } }}`}</Code>
               Higher levels recover from more damage but hold less data. Set with{' '}
               <Mono>qr.errorCorrectionLevel</Mono>. You can also pin the <Mono>version</Mono> (1-40)
               and <Mono>mask</Mono> (0-7); both are chosen automatically by default. Mixed payloads
-              are split into numeric, alphanumeric and byte segments for the smallest symbol, and an
-              empty <Mono>value</Mono> throws rather than rendering a blank code.
+              are split into numeric, alphanumeric, byte and Kanji segments for the smallest symbol
+              (Kanji mode uses the runtime's own Shift_JIS decoder, so no table ships in the
+              bundle), and an empty <Mono>value</Mono> throws rather than rendering a blank code.
             </P>
             <Table
               head={['Level', 'Recovery', 'Use when']}
@@ -700,13 +718,16 @@ const { text } = decodeMatrix(modules); // modules[y][x], true = dark`}</Code>
               <Mono>MatrixDecodeResult</Mono> = <Mono>{'{ text, version, ecl, mask }'}</Mono>.
             </P>
             <P>
-              Supported: versions 1-40, every ECL and mask, numeric / alphanumeric / byte modes,
-              multi-segment payloads, ECI charsets, format-information BCH correction and
-              Reed-Solomon correction up to half the block's ECC codewords. Kanji mode, Structured
-              Append and FNC1 throw <Mono>UnsupportedModeError</Mono> instead of returning truncated
-              text. The image path handles clean upright or rotated images and composites alpha over
-              white; mirrored images, strong perspective and uneven lighting are out of scope (use a
-              camera-grade decoder such as ZXing for those).
+              Supported: versions 1-40, every ECL and mask, numeric / alphanumeric / byte / Kanji
+              modes, multi-segment payloads, ECI charsets, Structured Append and FNC1 headers
+              (reported on the result), format-information BCH correction and Reed-Solomon
+              correction up to half the block's ECC codewords. The image path binarizes with a
+              local, shadow-tolerant threshold (falling back to a global one), locates the finders,
+              refines the grid through the bottom-right alignment pattern into a perspective
+              transform, samples each module by majority vote, and retries mirrored (the result
+              carries <Mono>mirrored: true</Mono>). Rotated, tilted, unevenly lit, transparent and
+              front-camera images all decode; very low resolution (under about 3 px per module) and
+              heavy blur remain the domain of a camera-grade decoder.
             </P>
           </Section>
 

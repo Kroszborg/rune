@@ -36,7 +36,7 @@ attributes + body for building a real `<svg>` in a framework (used by the adapte
 | `background` | `string \| BackgroundOptions` | `'#ffffff'` | Color, gradient, or image; `'transparent'` accepted |
 | `logo` | `LogoOptions` | — | Center logo (image, or a bare plate when `src` is omitted). See *Logos* below |
 | `frame` | `FrameOptions` | — | Outer frame + CTA text |
-| `qr` | `{ errorCorrectionLevel, version, mask, eci, boostEcl }` | — | Encoding controls. ECL accepts `H`, `h` or `high`; `eci` adds a UTF-8 header for strict readers |
+| `qr` | `{ errorCorrectionLevel, version, mask, eci, boostEcl, kanji }` | — | Encoding controls. ECL accepts `H`, `h` or `high`; `eci` adds a UTF-8 header for strict readers; `kanji` (default on) packs Japanese text at 13 bits/char |
 | `preset` | `PresetName` | — | Named base style |
 | `ariaLabel` | `string` | see below | Accessible label. Defaults to `QR code: {value}` for short http(s) URLs and plain `QR code` otherwise, so WiFi passwords are never read aloud |
 | `title` | `string` | — | `<title>` element (tooltip) inside the SVG |
@@ -47,9 +47,14 @@ attributes + body for building a real `<svg>` in a framework (used by the adapte
 **Finder core:** `square · rounded · dot`
 **Alignment patterns:** `square · rounded · circle · inherit` (solid by default so decoders can
 still locate them; `inherit` styles them like the data)
+**Per-corner finders:** `corners.topLeft` / `topRight` / `bottomLeft` take `{ square, dot }` and
+override the shared finder style for that corner only.
 
 `value` must be non-empty; an empty string throws rather than rendering a blank symbol.
-Mixed payloads are split into numeric / alphanumeric / byte segments for the smallest symbol.
+Mixed payloads are split into numeric / alphanumeric / byte / Kanji segments for the smallest
+symbol. Kanji mode builds its Shift_JIS table from the runtime's own `TextDecoder` the first
+time it is needed, so nothing ships in the bundle; where that decoder is missing (Node built
+with small-icu) Japanese text simply uses byte mode.
 
 **Validation.** Every option is checked before anything is drawn. Unknown style or preset
 names, a non-finite `size`, a negative `margin`, an empty gradient, a bad ECL and the like

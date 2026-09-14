@@ -51,12 +51,12 @@ const svg = toSVGString({ value: 'https://example.com', dots: { style: 'rounded'
 
 - **Pure SVG**, zero runtime dependencies in the core.
 - **Four targets** — React, Vue, vanilla, Web Component — from one engine.
-- **Every shape** — 9 dot styles, 5 finder rings, 3 finder cores, 3 alignment styles, freely mixed.
+- **Every shape** — 9 dot styles, 5 finder rings, 3 finder cores, 3 alignment styles, freely mixed, with per-corner finder overrides.
 - **Gradients** (linear/radial per element), **background images**, **frames + CTA text** (auto-fitted), **logos** (image or live node; the lowest safe ECL is chosen from exact codeword damage, never a blanket `H`).
 - **Data builders** — WiFi, vCard, email, SMS, geo, calendar, crypto, and more.
 - **Export** — `toSVGString` (sync/SSR), plus PNG · JPEG · WebP · PDF via optional peer packages (`@kroszborg/rune/node`); nothing native is installed unless you add it.
-- **Decoder** — decode QR codes from a module matrix or raw image pixels.
-- **Smallest symbol** — mixed payloads are split into numeric / alphanumeric / byte segments (same result as `node-qrcode`); optional UTF-8 ECI header.
+- **Decoder** — decode QR codes from a module matrix or raw image pixels: rotated, tilted, unevenly lit, transparent or mirrored, in every mode including Kanji.
+- **Smallest symbol** — mixed payloads are split into numeric / alphanumeric / byte / Kanji segments (bit-for-bit what `node-qrcode` produces); optional UTF-8 ECI header.
 - **Verified correct** — the encoder matches `node-qrcode` bit-for-bit; every dot style, every finder style in both polarities, dense version-30+ symbols, logos and frames are decoded back in CI, on Linux, Windows and macOS across Node 20, 22 and 24.
 - **Fails loudly, never silently** — unknown style names, bad numbers, empty gradients or an empty value throw a `RangeError` naming the option instead of rendering a broken code; the CLI rejects unknown flags.
 

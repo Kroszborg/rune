@@ -84,6 +84,18 @@
   - CI runs on Linux, Windows and macOS across Node 20/22/24; releases go through
     changesets with npm provenance. Added SECURITY.md and CONTRIBUTING.md.
 
+  **Removed limits**
+
+  - Per-corner finder styling: `corners.topLeft` / `topRight` / `bottomLeft` override the
+    shared ring/core style and fill for one corner.
+  - Kanji mode, encode and decode. The encoder builds its Shift_JIS table lazily from the
+    runtime's `TextDecoder` (no table in the bundle) and its output matches node-qrcode's
+    Kanji mode bit-for-bit; `qr.kanji: false` disables it.
+  - Decoder image path: local (block-adaptive) binarization for uneven lighting, perspective
+    correction through the bottom-right alignment pattern, majority-vote module sampling,
+    mirrored-image retry (`result.mirrored`), multiple finder-triple candidates, and
+    Structured Append / FNC1 headers reported on the result instead of throwing.
+
 ### Patch Changes
 
 - Updated dependencies

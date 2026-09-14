@@ -17,8 +17,11 @@ const result = decode(img);
 if (result) console.log(result.text, result.version, result.ecl);
 ```
 
-Handles clean, upright (and rotated) images via finder-pattern detection and affine grid
-sampling. Returns `null` if no decodable symbol is found.
+Binarizes with a local, shadow-tolerant threshold (falling back to a global one), locates the
+finder patterns, refines the grid through the bottom-right alignment pattern into a perspective
+transform, samples each module by majority vote, and retries mirrored. Rotated, tilted, unevenly
+lit, transparent and front-camera images decode; `result.mirrored` tells you when the image was
+flipped. Returns `null` if no decodable symbol is found.
 
 ## From a module matrix
 
@@ -37,13 +40,13 @@ Reed–Solomon correction → segment parse.
 | Area | Status |
 | --- | --- |
 | Versions 1–40, all four ECLs, all eight masks | yes |
-| Numeric, alphanumeric and byte modes; multi-segment payloads | yes |
+| Numeric, alphanumeric, byte and Kanji modes; multi-segment payloads | yes (Kanji via the runtime's Shift_JIS `TextDecoder`) |
 | ECI headers (UTF-8, ISO-8859-x, Shift_JIS, UTF-16BE, GB18030, EUC-KR) | yes, charset honoured |
+| Structured Append and FNC1 headers | yes, reported as `result.structuredAppend` / `result.fnc1` |
 | Format-information BCH correction (up to 3 bit errors, both copies) | yes |
 | Reed–Solomon correction | yes, up to ⌊ecc/2⌋ errors per block |
-| Kanji mode, Structured Append, FNC1 | **no**: `UnsupportedModeError` is thrown rather than returning truncated text |
-| Image input | clean, upright or rotated images; alpha is composited over white |
-| Mirrored images, strong perspective, uneven lighting, < 3 px per module | **no**; use a camera-grade decoder such as ZXing for those |
+| Image input | rotated, tilted (perspective), unevenly lit, transparent and mirrored images |
+| Very low resolution (< ~3 px per module), heavy blur | **no**; use a camera-grade decoder such as ZXing for those |
 
 Invalid input (a ragged matrix, an image buffer shorter than `width × height × 4`) throws a
 descriptive error instead of returning `null`.
