@@ -23,13 +23,13 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
         node: [20, 22, 24]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       # No `version:` here — pnpm is pinned by "packageManager" in package.json,
       # and specifying it in both places is an error.
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node }}
           cache: pnpm
@@ -58,7 +58,7 @@ jobs:
         if: matrix.os == 'ubuntu-latest' && matrix.node == 22
         run: pnpm -r --filter "./packages/*" exec pnpm pack --pack-destination ../../.artifacts
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         if: matrix.os == 'ubuntu-latest' && matrix.node == 22
         with:
           name: tarballs
