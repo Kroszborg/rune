@@ -1,10 +1,10 @@
 import type { RuneOptions } from './types.js';
 
 /** A preset is a partial set of style options applied as a base. */
-export type Preset = Partial<Omit<RuneOptions, 'value'>>;
+export type Preset = Partial<Omit<RuneOptions, 'value' | 'preset'>>;
 
 /** Built-in named presets shown in the docs gallery. */
-export const PRESETS: Record<string, Preset> = {
+export const PRESETS = {
   minimal: {
     dots: { style: 'square', color: '#0b0b0f' },
     background: '#ffffff',
@@ -61,11 +61,13 @@ export const PRESETS: Record<string, Preset> = {
     corners: { square: { style: 'leaf' }, dot: { style: 'rounded' } },
     background: '#fffdfb',
   },
-};
+} as const satisfies Record<string, Preset>;
 
 /** Preset names, for docs/typing. */
 export type PresetName = keyof typeof PRESETS;
 
 export function getPreset(name: string): Preset | undefined {
-  return PRESETS[name];
+  return Object.prototype.hasOwnProperty.call(PRESETS, name)
+    ? (PRESETS as Record<string, Preset>)[name]
+    : undefined;
 }

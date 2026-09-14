@@ -28,7 +28,7 @@ describe('parseArgs', () => {
     ]);
     expect(p.options.dots?.style).toBe('rounded');
     expect(p.options.corners?.square?.style).toBe('leaf');
-    expect(p.options.qr?.errorCorrectionLevel).toBe('H');
+    expect(p.options.qr?.errorCorrectionLevel).toBe('h'); // the core normalises case
     expect(p.options.size).toBe(512);
   });
 

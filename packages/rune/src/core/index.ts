@@ -1,4 +1,4 @@
-export { encode } from './qr.js';
+export { encode, normalizeEcl } from './qr.js';
 export {
   alignmentPatternPositions,
   MAX_VERSION,
@@ -6,4 +6,4 @@ export {
   numDataCodewords,
   versionSize,
 } from './tables.js';
-export type { Ecl, EncodeOptions, Mode, RuneMatrix } from './types.js';
+export type { CodewordLayout, Ecl, EclInput, EncodeOptions, Mode, RuneMatrix } from './types.js';

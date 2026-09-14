@@ -32,27 +32,68 @@ attributes + body for building a real `<svg>` in a framework (used by the adapte
 | `size` | `number` | `256` | Output width/height in px |
 | `margin` | `number` | `4` | Quiet zone in modules |
 | `dots` | `{ style, color, gradient }` | — | Data-module style + fill |
-| `corners` | `CornerOptions` | — | Finder ring + core styles/fills |
+| `corners` | `CornerOptions` | — | Finder ring + core + alignment-pattern styles/fills |
 | `background` | `string \| BackgroundOptions` | `'#ffffff'` | Color, gradient, or image; `'transparent'` accepted |
-| `logo` | `LogoOptions` | — | Center logo. ECL auto-raised to `H` (unless you set one) and logo size clamped per ECL to stay scannable |
+| `logo` | `LogoOptions` | — | Center logo (image, or a bare plate when `src` is omitted). See *Logos* below |
 | `frame` | `FrameOptions` | — | Outer frame + CTA text |
-| `qr` | `{ errorCorrectionLevel, version, mask }` | — | Encoding controls |
+| `qr` | `{ errorCorrectionLevel, version, mask, eci, boostEcl }` | — | Encoding controls. ECL accepts `H`, `h` or `high`; `eci` adds a UTF-8 header for strict readers |
 | `preset` | `PresetName` | — | Named base style |
-| `ariaLabel` | `string` | `QR code: {value}` | Accessible label |
+| `ariaLabel` | `string` | see below | Accessible label. Defaults to `QR code: {value}` for short http(s) URLs and plain `QR code` otherwise, so WiFi passwords are never read aloud |
+| `title` | `string` | — | `<title>` element (tooltip) inside the SVG |
+| `idPrefix` | `string` | hash | Namespace for gradient ids when several identical codes share a page |
 
 **Dot styles:** `square · dot · rounded · extra-rounded · classy · classy-rounded · leaf · diamond · star`
 **Finder ring:** `square · rounded · extra-rounded · circle · leaf`
 **Finder core:** `square · rounded · dot`
+**Alignment patterns:** `square · rounded · circle · inherit` (solid by default so decoders can
+still locate them; `inherit` styles them like the data)
+
+`value` must be non-empty; an empty string throws rather than rendering a blank symbol.
+Mixed payloads are split into numeric / alphanumeric / byte segments for the smallest symbol.
+
+**Validation.** Every option is checked before anything is drawn. Unknown style or preset
+names, a non-finite `size`, a negative `margin`, an empty gradient, a bad ECL and the like
+throw a `RangeError` whose message names the option, instead of producing a broken SVG.
+`validateOptions(options)` is exported if you want to check ahead of time (the CLI does).
+Keys whose value is `undefined` are ignored, so forwarding every prop from a framework
+component never overrides a preset.
+
+## Logos
+
+A logo hides part of the code. Rune does not force ECL `H` for it (denser codes are *harder*
+to scan). It counts exactly how many codewords the logo covers in each Reed–Solomon block and
+steps the level up `M → Q → H` only as far as that damage requires, keeping 30% of the
+correction capacity for real-world wear. If even `H` cannot absorb the logo (small symbols
+have little redundancy) the logo is shrunk to the largest safe size; pass `clamp: false` to
+keep the exact size, or pin `qr.errorCorrectionLevel` to choose the level yourself.
+
+```ts
+toSVGString({ value, logo: { src: '/logo.svg', size: 0.2, shape: 'circle' } });
+// Bare plate for an overlay (used by the React/Vue adapters):
+const { body, logo } = renderToParts({ value, logo: { size: 0.2 } }); // logo = { x, y, width, height }
+```
 
 ## Export helpers
 
 ```ts
 import { toDataURL } from '@kroszborg/rune';          // browser (Canvas): PNG/JPEG/WebP
 import { toBuffer, toPDF } from '@kroszborg/rune/node'; // Node: PNG/JPEG/WebP/PDF
+
+await toDataURL(options, { format: 'png', scale: 2 });          // scale defaults to devicePixelRatio
+await toBuffer(options, { format: 'webp', quality: 0.9 });       // Node: scale defaults to 1
+await toPDF(options, { page: { width: 595, height: 842 }, printSize: 200 }); // A4, centred
 ```
 
-Node raster/PDF output uses the optional peers `@resvg/resvg-js`, `sharp`, and `pdf-lib`,
-imported lazily so the main entry stays free of native binaries.
+`RasterOptions`: `format` (`png` default, `jpeg`, `webp`), `quality` 0–1, `scale`,
+`background` (JPEG only; PNG and WebP keep alpha), `inlineRemoteImages` (default `true`:
+`http(s):` logo and background images are fetched and embedded, because neither Canvas nor
+resvg loads remote images on its own). `toPDF` renders at 4× for print and accepts `page`
+and `printSize` in points. Output above 16384 px, an out-of-range `quality` or an unknown
+`format` throw a `RangeError`.
+
+Node raster/PDF output uses the optional peer packages `@resvg/resvg-js`, `sharp`, and
+`pdf-lib`. They are imported lazily and are **not** installed automatically — add the ones you
+need. The main entry has no dependencies at all.
 
 ## Data builders
 

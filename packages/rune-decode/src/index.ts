@@ -8,5 +8,7 @@
 export { decodeMatrix } from './matrix-decode.js';
 export type { MatrixDecodeResult } from './matrix-decode.js';
 export { decode } from './image.js';
+export { UnsupportedModeError } from './bits.js';
+export type { ParsedData, StructuredAppend } from './bits.js';
 export type { ImageInput } from './image.js';
 export type { Ecl } from './tables.js';

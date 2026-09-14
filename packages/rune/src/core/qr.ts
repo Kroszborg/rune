@@ -2,9 +2,11 @@ import { BitBuffer } from './bit-buffer.js';
 import { reedSolomonGenerator, reedSolomonRemainder } from './galois.js';
 import {
   type Segment,
-  charCountBits,
-  makeSegment,
-  segmentBitLength,
+  isAscii,
+  makeSegments,
+  segmentsBitLength,
+  versionGroup,
+  writeEciUtf8,
   writeSegment,
 } from './segment.js';
 import {
@@ -18,7 +20,7 @@ import {
   numRawDataModules,
   versionSize,
 } from './tables.js';
-import type { Ecl, EncodeOptions, RuneMatrix } from './types.js';
+import type { CodewordLayout, Ecl, EclInput, EncodeOptions, RuneMatrix } from './types.js';
 
 /** 2-bit format value per ECL (ISO/IEC 18004 Table 12): M=0, L=1, H=2, Q=3. */
 const ECL_FORMAT_BITS: Record<Ecl, number> = { M: 0, L: 1, H: 2, Q: 3 };
@@ -29,41 +31,126 @@ function getBit(value: number, i: number): boolean {
   return ((value >>> i) & 1) !== 0;
 }
 
+const ECL_ALIASES: Record<string, Ecl> = {
+  l: 'L',
+  m: 'M',
+  q: 'Q',
+  h: 'H',
+  low: 'L',
+  medium: 'M',
+  quartile: 'Q',
+  high: 'H',
+};
+
+/** Normalise any accepted spelling of an error-correction level, or throw. */
+export function normalizeEcl(input: EclInput | string | undefined): Ecl {
+  if (input === undefined) return 'M';
+  const ecl = typeof input === 'string' ? ECL_ALIASES[input.toLowerCase()] : undefined;
+  if (!ecl) {
+    throw new RangeError(
+      `Rune: invalid errorCorrectionLevel ${JSON.stringify(input)}; expected L, M, Q or H`,
+    );
+  }
+  return ecl;
+}
+
+function checkVersion(value: number | undefined, name: string): number | undefined {
+  if (value === undefined) return undefined;
+  if (!Number.isInteger(value) || value < MIN_VERSION || value > MAX_VERSION) {
+    throw new RangeError(`Rune: ${name} must be an integer from 1 to 40, got ${String(value)}`);
+  }
+  return value;
+}
+
 /**
  * Encode `text` into a fully-masked QR symbol.
  *
- * Throws if the data does not fit in the largest allowed version.
+ * Throws if `text` is empty or does not fit in the largest allowed version.
  */
 export function encode(text: string, options: EncodeOptions = {}): RuneMatrix {
-  const requestedEcl = options.errorCorrectionLevel ?? 'M';
-  const minV = Math.max(MIN_VERSION, options.version ?? MIN_VERSION);
-  const maxV = Math.min(MAX_VERSION, options.version ?? options.maxVersion ?? MAX_VERSION);
+  if (typeof text !== 'string' || text.length === 0) {
+    throw new Error('Rune: value must be a non-empty string');
+  }
+  const requestedEcl = normalizeEcl(options.errorCorrectionLevel);
+  const pinned = checkVersion(options.version, 'version');
+  const cap = checkVersion(options.maxVersion, 'maxVersion');
+  const minV = pinned ?? MIN_VERSION;
+  const maxV = pinned ?? cap ?? MAX_VERSION;
   const boostEcl = options.boostEcl ?? true;
+  const allowKanji = options.kanji ?? true;
+  // The UTF-8 ECI header only matters when byte mode carries non-ASCII text;
+  // ASCII payloads never get one even when opted in.
+  const eciWanted = (options.eci ?? false) && !isAscii(text);
 
-  const segment = makeSegment(text);
-  const version = selectVersion(segment, requestedEcl, minV, maxV);
+  // The optimal split depends on the character-count width, which changes at
+  // versions 10 and 27, so segment once per group and reuse.
+  const byGroup: Array<Segment[] | undefined> = [undefined, undefined, undefined];
+  const segmentsFor = (v: number): Segment[] => {
+    const g = versionGroup(v);
+    let segs = byGroup[g];
+    if (!segs) {
+      segs = makeSegments(text, v, allowKanji);
+      byGroup[g] = segs;
+    }
+    return segs;
+  };
+
+  const eciFor = (segs: Segment[]) =>
+    eciWanted && segs.some((s) => s.mode === 'byte' && s.data.length > 0 && !isAsciiBytes(s));
+  const version = selectVersion(segmentsFor, requestedEcl, minV, maxV, eciFor);
+  const segments = segmentsFor(version);
+  const eci = eciFor(segments);
+  const bits = segmentsBitLength(segments, version, eci);
 
   // Boost ECL for free if the data still fits at the chosen version.
   let ecl = requestedEcl;
   if (boostEcl) {
     for (const candidate of ['M', 'Q', 'H'] as const) {
-      if (segmentBitLength(segment, version) <= numDataCodewords(version, candidate) * 8) {
+      if (
+        ECL_ORDER[candidate] > ECL_ORDER[ecl] &&
+        bits <= numDataCodewords(version, candidate) * 8
+      ) {
         ecl = candidate;
       }
     }
   }
 
-  const dataCodewords = buildDataCodewords(segment, version, ecl);
-  const allCodewords = addEccAndInterleave(dataCodewords, version, ecl);
+  const dataCodewords = buildDataCodewords(segments, version, ecl, eci);
+  const { codewords, blockOf, blockCount, correctablePerBlock } = addEccAndInterleave(
+    dataCodewords,
+    version,
+    ecl,
+  );
 
-  return buildMatrix(version, ecl, allCodewords, options.mask);
+  return buildMatrix(version, ecl, codewords, options.mask, {
+    blockOf,
+    blockCount,
+    correctablePerBlock,
+  });
 }
 
-function selectVersion(segment: Segment, ecl: Ecl, minV: number, maxV: number): number {
+/** Recovery strength order, for comparing levels. */
+const ECL_ORDER: Record<Ecl, number> = { L: 0, M: 1, Q: 2, H: 3 };
+
+/** True when a byte segment holds only 7-bit values (no ECI needed for it). */
+function isAsciiBytes(segment: Segment): boolean {
+  // Each byte is 8 bits; the high bit of every byte must be 0.
+  for (let i = 0; i < segment.data.length; i += 8) if (segment.data[i]) return false;
+  return true;
+}
+
+function selectVersion(
+  segmentsFor: (v: number) => Segment[],
+  ecl: Ecl,
+  minV: number,
+  maxV: number,
+  eciFor: (segs: Segment[]) => boolean,
+): number {
   for (let v = minV; v <= maxV; v++) {
-    if (segmentBitLength(segment, v) <= numDataCodewords(v, ecl) * 8) return v;
+    const segs = segmentsFor(v);
+    if (segmentsBitLength(segs, v, eciFor(segs)) <= numDataCodewords(v, ecl) * 8) return v;
   }
-  const needed = segmentBitLength(segment, maxV);
+  const needed = segmentsBitLength(segmentsFor(maxV), maxV, eciFor(segmentsFor(maxV)));
   throw new Error(
     `Data too long: needs ${needed} bits but version ${maxV} (ECL ${ecl}) holds ${
       numDataCodewords(maxV, ecl) * 8
@@ -72,10 +159,16 @@ function selectVersion(segment: Segment, ecl: Ecl, minV: number, maxV: number): 
 }
 
 /** Assemble the padded data codeword byte array for a version + ECL. */
-function buildDataCodewords(segment: Segment, version: number, ecl: Ecl): Uint8Array {
+function buildDataCodewords(
+  segments: Segment[],
+  version: number,
+  ecl: Ecl,
+  eci: boolean,
+): Uint8Array {
   const capacityBits = numDataCodewords(version, ecl) * 8;
   const bb = new BitBuffer();
-  writeSegment(bb, segment, version);
+  if (eci) writeEciUtf8(bb);
+  for (const segment of segments) writeSegment(bb, segment, version);
 
   // Terminator: up to four 0 bits.
   const terminator = Math.min(4, capacityBits - bb.length);
@@ -94,8 +187,15 @@ function buildDataCodewords(segment: Segment, version: number, ecl: Ecl): Uint8A
   return bytes;
 }
 
+interface Interleaved {
+  codewords: Uint8Array;
+  blockOf: Uint8Array;
+  blockCount: number;
+  correctablePerBlock: number;
+}
+
 /** Split into blocks, compute Reed–Solomon EC codewords, and interleave. */
-function addEccAndInterleave(data: Uint8Array, version: number, ecl: Ecl): Uint8Array {
+function addEccAndInterleave(data: Uint8Array, version: number, ecl: Ecl): Interleaved {
   const e = ECL_INDEX[ecl];
   const numBlocks = NUM_ERROR_CORRECTION_BLOCKS[e]![version]!;
   const blockEccLen = ECC_CODEWORDS_PER_BLOCK[e]![version]!;
@@ -118,17 +218,24 @@ function addEccAndInterleave(data: Uint8Array, version: number, ecl: Ecl): Uint8
   }
 
   const result = new Uint8Array(rawCodewords);
+  const blockOf = new Uint8Array(rawCodewords);
   let idx = 0;
   const maxLen = shortBlockLen + 1;
   for (let i = 0; i < maxLen; i++) {
     for (let j = 0; j < blocks.length; j++) {
       // Skip the padding column that only exists in short blocks.
       if (i !== shortBlockLen - blockEccLen || j >= numShortBlocks) {
+        blockOf[idx] = j;
         result[idx++] = blocks[j]![i]!;
       }
     }
   }
-  return result;
+  return {
+    codewords: result,
+    blockOf,
+    blockCount: numBlocks,
+    correctablePerBlock: Math.floor(blockEccLen / 2),
+  };
 }
 
 /** Draw all modules and select the mask, returning the final matrix. */
@@ -137,6 +244,7 @@ function buildMatrix(
   ecl: Ecl,
   codewords: Uint8Array,
   forcedMask: number | undefined,
+  blocks: Omit<CodewordLayout, 'codewordAt'>,
 ): RuneMatrix {
   const size = versionSize(version);
   const modules = createGrid(size);
@@ -148,13 +256,13 @@ function buildMatrix(
   };
 
   drawFunctionPatterns(size, version, ecl, setFn, reserved, modules);
-  drawCodewords(size, codewords, reserved, modules);
+  const codewordAt = drawCodewords(size, codewords, reserved, modules);
 
   const mask = selectMask(size, ecl, forcedMask, reserved, modules);
   applyMask(size, mask, reserved, modules);
   drawFormatBits(size, ecl, mask, modules);
 
-  return { size, modules, version, ecl, mask, reserved };
+  return { size, modules, version, ecl, mask, reserved, layout: { codewordAt, ...blocks } };
 }
 
 function createGrid(size: number): boolean[][] {
@@ -283,13 +391,17 @@ function drawVersion(
   }
 }
 
-/** Place data + EC codewords into the matrix along the zigzag path. */
+/**
+ * Place data + EC codewords into the matrix along the zigzag path. Returns the
+ * per-module codeword index (-1 for function modules and remainder bits).
+ */
 function drawCodewords(
   size: number,
   codewords: Uint8Array,
   reserved: boolean[][],
   modules: boolean[][],
-): void {
+): Int32Array {
+  const codewordAt = new Int32Array(size * size).fill(-1);
   let i = 0; // bit index
   for (let right = size - 1; right >= 1; right -= 2) {
     if (right === 6) right = 5; // skip the vertical timing column
@@ -300,11 +412,13 @@ function drawCodewords(
         const y = upward ? size - 1 - vert : vert;
         if (!reserved[y]![x] && i < codewords.length * 8) {
           modules[y]![x] = getBit(codewords[i >>> 3]!, 7 - (i & 7));
+          codewordAt[y * size + x] = i >>> 3;
           i++;
         }
       }
     }
   }
+  return codewordAt;
 }
 
 /** The invert predicate for a mask pattern (ISO/IEC 18004 §7.8.2). */

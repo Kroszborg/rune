@@ -1,4 +1,4 @@
-import { parseSegments } from './bits.js';
+import { type ParsedData, parseSegments } from './bits.js';
 import { decodeFormatBits, readFormat, readFormatSecondary } from './format.js';
 import { rsDecode } from './reedsolomon.js';
 import {
@@ -11,11 +11,13 @@ import {
   versionForSize,
 } from './tables.js';
 
-export interface MatrixDecodeResult {
+export interface MatrixDecodeResult extends ParsedData {
   text: string;
   version: number;
   ecl: Ecl;
   mask: number;
+  /** Set by the image decoder when the symbol was read mirrored (front camera, flipped scan). */
+  mirrored?: boolean;
 }
 
 /** Build the function-pattern (reserved) map for a version, matching the encoder. */
@@ -156,8 +158,16 @@ function deinterleave(codewords: number[], version: number, ecl: Ecl): number[][
  * Reed–Solomon correction → segment parse. Throws on unrecoverable data.
  */
 export function decodeMatrix(modules: boolean[][]): MatrixDecodeResult {
+  if (!Array.isArray(modules)) throw new TypeError('rune-decode: modules must be a boolean[][]');
   const size = modules.length;
-  if (size < 21 || (size - 17) % 4 !== 0) throw new Error(`Invalid matrix size ${size}`);
+  if (size < 21 || size > 177 || (size - 17) % 4 !== 0) {
+    throw new Error(`Invalid matrix size ${size}`);
+  }
+  for (let y = 0; y < size; y++) {
+    if (!Array.isArray(modules[y]) || modules[y]!.length !== size) {
+      throw new Error(`Invalid matrix: row ${y} is not ${size} modules wide`);
+    }
+  }
   const version = versionForSize(size);
 
   const format =
@@ -175,6 +185,6 @@ export function decodeMatrix(modules: boolean[][]): MatrixDecodeResult {
   const data: number[] = [];
   for (const block of blocks) data.push(...rsDecode(block, blockEccLen));
 
-  const text = parseSegments(data, version);
-  return { text, version, ecl, mask };
+  const parsed = parseSegments(data, version);
+  return { ...parsed, version, ecl, mask };
 }

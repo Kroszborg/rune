@@ -101,3 +101,67 @@ describe('image round-trip (render → rasterize → decode)', () => {
     });
   }
 });
+
+describe('multi-segment and ECI payloads round-trip', () => {
+  const mixed = [
+    'https://x.co/r/1234567890123',
+    'Tel: +91 98765 43210 ext 42',
+    'WIFI:T:WPA;S:MyNet;P:12345678901234567890;;',
+    'ABC123abc456DEF789012345678',
+  ];
+  for (const text of mixed) {
+    it(`decodes ${JSON.stringify(text.slice(0, 24))} split across modes`, () => {
+      expect(decodeMatrix(encode(text).modules).text).toBe(text);
+    });
+  }
+
+  it('decodes UTF-8 text carrying an ECI header', () => {
+    const text = 'Rune ✓ ünïcödé — 日本語';
+    expect(decodeMatrix(encode(text, { eci: true }).modules).text).toBe(text);
+  });
+});
+
+describe('decoder limits and input validation (audit regressions)', () => {
+  it('decodes Kanji-mode symbols produced by another encoder', async () => {
+    const QRCode = (await import('qrcode')).default;
+    // @ts-expect-error: helper has no type declarations
+    const toSJIS = (await import('qrcode/helper/to-sjis')).default as (c: string) => number;
+    const ref = QRCode.create([{ data: '日本語', mode: 'kanji' }], {
+      errorCorrectionLevel: 'm',
+      toSJISFunc: toSJIS,
+    });
+    const size = ref.modules.size;
+    const grid: boolean[][] = [];
+    for (let y = 0; y < size; y++) {
+      const row: boolean[] = [];
+      for (let x = 0; x < size; x++) row.push(Boolean(ref.modules.data[y * size + x]));
+      grid.push(row);
+    }
+    expect(decodeMatrix(grid).text).toBe('日本語');
+  });
+
+  it('decodes a transparent-background render (alpha composited over white)', () => {
+    const svg = toSVGString({
+      value: 'https://rune.kroszborg.co/alpha',
+      background: 'transparent',
+      size: 320,
+    });
+    const r = new Resvg(svg, { fitTo: { mode: 'width', value: 320 } }).render();
+    const result = decode({
+      data: new Uint8ClampedArray(r.pixels),
+      width: r.width,
+      height: r.height,
+    });
+    expect(result?.text).toBe('https://rune.kroszborg.co/alpha');
+  });
+
+  it('rejects ragged matrices and malformed image input with clear errors', () => {
+    expect(() => decodeMatrix(new Array(21) as boolean[][])).toThrow(/row 0/);
+    expect(() => decode({ data: new Uint8ClampedArray(10), width: 100, height: 100 })).toThrow(
+      /bytes/,
+    );
+    expect(() => decode({ data: new Uint8ClampedArray(0), width: 0, height: 0 })).toThrow(
+      /dimensions/,
+    );
+  });
+});

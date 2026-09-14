@@ -6,7 +6,7 @@ export default defineConfig({
   dts: true,
   clean: true,
   treeshake: true,
-  sourcemap: true,
+  sourcemap: false,
   minify: false,
   target: 'es2021',
   // Optional raster/PDF peers are imported lazily and must never be bundled

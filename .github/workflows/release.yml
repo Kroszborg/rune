@@ -1,22 +1,33 @@
 name: Release
 
-# Publish all @kroszborg/* packages to npm when you push a version tag, e.g.:
-#   pnpm -r exec npm version 1.0.0 --no-git-tag-version   # bump every package
-#   git commit -am "release: v1.0.0" && git tag v1.0.0 && git push --follow-tags
+# Changesets-driven releases with npm provenance.
 #
-# Requires an npm automation token in the repo:
-#   Settings → Secrets and variables → Actions → New secret → name: NPM_TOKEN
+# 1. Land PRs on main with a changeset (`pnpm changeset`).
+# 2. This workflow opens/updates a "Version Packages" PR that bumps versions and
+#    writes CHANGELOGs.
+# 3. Merging that PR publishes every changed @kroszborg/* package to npm with
+#    provenance attestations (OIDC — no long-lived token needed if the packages
+#    are configured for Trusted Publishing; otherwise set NPM_TOKEN).
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
+concurrency: release-${{ github.ref }}
 
 jobs:
-  publish:
+  release:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: pnpm/action-setup@v4
 
@@ -29,13 +40,21 @@ jobs:
       - name: Install
         run: pnpm install --frozen-lockfile
 
-      - name: Build
-        run: pnpm build
+      - name: Lint, typecheck, build, test
+        run: |
+          pnpm lint
+          pnpm typecheck
+          pnpm build
+          pnpm test
 
-      - name: Test
-        run: pnpm test
-
-      - name: Publish to npm
-        run: pnpm -r --filter "./packages/*" publish --no-git-checks --access public
+      - name: Version or publish
+        uses: changesets/action@v1
+        with:
+          version: pnpm changeset version
+          publish: pnpm changeset publish
+          commit: 'release: version packages'
+          title: 'release: version packages'
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_PROVENANCE: 'true'

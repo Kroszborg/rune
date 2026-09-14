@@ -65,3 +65,46 @@ describe('data builders', () => {
     );
   });
 });
+
+describe('data builders (audit regressions)', () => {
+  it('escapes vCard values and uses CRLF', () => {
+    const card = vcard({
+      firstName: 'Ada',
+      lastName: 'Lovelace',
+      org: 'Acme; Inc',
+      note: 'line1\nline2',
+    });
+    expect(card).toContain('ORG:Acme\\; Inc');
+    expect(card).toContain('NOTE:line1\\nline2');
+    expect(card.split('\r\n').length).toBeGreaterThan(4);
+    expect(card).not.toMatch(/[^\r]\n/);
+  });
+
+  it('keeps the MECARD name separator unescaped', () => {
+    expect(mecard({ firstName: 'Ada', lastName: 'Lovelace' })).toContain('N:Lovelace,Ada');
+    expect(mecard({ fullName: 'Ada, Countess' })).toContain('N:Ada\\, Countess');
+  });
+
+  it('wraps events in VCALENDAR, escapes text and rejects bad dates', () => {
+    const ev = event({
+      title: 'Launch; day',
+      start: '2026-10-01T10:00:00Z',
+      end: '2026-10-01T11:00:00Z',
+    });
+    expect(ev.startsWith('BEGIN:VCALENDAR\r\nVERSION:2.0\r\nBEGIN:VEVENT')).toBe(true);
+    expect(ev).toContain('SUMMARY:Launch\\; day');
+    expect(() => event({ title: 'x', start: 'tomorrow', end: 'x' })).toThrow(/start/);
+  });
+
+  it('treats host:port as a host, not a scheme', () => {
+    expect(url('localhost:3000')).toBe('https://localhost:3000');
+    expect(url('example.com:8080/x')).toBe('https://example.com:8080/x');
+    expect(url('mailto:a@b.co')).toBe('mailto:a@b.co');
+    expect(url('example.com')).toBe('https://example.com');
+  });
+
+  it('validates geo coordinates', () => {
+    expect(() => geo({ lat: Number.NaN, lng: 0 })).toThrow(/lat/);
+    expect(() => geo({ lat: 91, lng: 0 })).toThrow(/±90/);
+  });
+});

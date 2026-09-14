@@ -1,6 +1,6 @@
 {
   "name": "@kroszborg/rune",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "Lightweight, fully customizable, framework-agnostic QR code library. Pure SVG, zero dependencies, built from scratch per ISO/IEC 18004.",
   "author": "Abhiman Panwar (@kroszborg)",
   "license": "MIT",
@@ -9,27 +9,50 @@
   "keywords": ["qr", "qrcode", "qr-code", "svg", "generator", "iso-18004", "zero-dependency"],
   "repository": {
     "type": "git",
-    "url": "https://github.com/Kroszborg/rune",
+    "url": "git+https://github.com/Kroszborg/rune.git",
     "directory": "packages/rune"
   },
   "homepage": "https://rune.kroszborg.co",
+  "bugs": {
+    "url": "https://github.com/Kroszborg/rune/issues"
+  },
+  "engines": {
+    "node": ">=20"
+  },
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      },
+      "default": "./dist/index.js"
     },
     "./node": {
-      "types": "./dist/node.d.ts",
-      "import": "./dist/node.js",
-      "require": "./dist/node.cjs"
+      "import": {
+        "types": "./dist/node.d.ts",
+        "default": "./dist/node.js"
+      },
+      "require": {
+        "types": "./dist/node.d.cts",
+        "default": "./dist/node.cjs"
+      },
+      "default": "./dist/node.js"
     },
     "./package.json": "./package.json"
   },
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": ["dist"],
+  "typesVersions": {
+    "*": {
+      "node": ["./dist/node.d.ts"]
+    }
+  },
+  "files": ["dist", "LICENSE", "CHANGELOG.md"],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -38,32 +61,36 @@
     "typecheck": "tsc --noEmit",
     "clean": "rimraf dist .turbo"
   },
-  "optionalDependencies": {
+  "peerDependencies": {
     "@resvg/resvg-js": "^2.6.2",
     "pdf-lib": "^1.17.1",
-    "sharp": "^0.33.5"
+    "sharp": ">=0.33.0 <1"
   },
   "peerDependenciesMeta": {
     "@resvg/resvg-js": {
       "optional": true
     },
-    "sharp": {
+    "pdf-lib": {
       "optional": true
     },
-    "pdf-lib": {
+    "sharp": {
       "optional": true
     }
   },
   "devDependencies": {
+    "@resvg/resvg-js": "^2.6.2",
     "@types/node": "^22.10.2",
     "@types/qrcode": "^1.5.5",
     "jsqr": "^1.4.0",
+    "pdf-lib": "^1.17.1",
     "qrcode": "^1.5.4",
-    "typescript": "^5.7.2",
+    "sharp": "^0.33.5",
     "tsup": "^8.3.5",
+    "typescript": "^5.7.2",
     "vitest": "^2.1.8"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "provenance": true
   }
 }

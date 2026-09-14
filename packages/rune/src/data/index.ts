@@ -3,10 +3,21 @@
  * strings (WiFi, vCard, calendar events, …). Pass the result as `value`.
  */
 
-/** Escape a value for WiFi / MECARD / vCard grammars (`\ ; , : "`). */
+/** Escape a value for the WiFi / MECARD grammars (`\ ; , : "`). */
 function escapeSpecial(value: string): string {
   return value.replace(/([\\;,:"])/g, '\\$1');
 }
+
+/** Escape a vCard / iCalendar text value (RFC 6350 §3.4 / RFC 5545 §3.3.11). */
+function escapeText(value: string): string {
+  return value
+    .replace(/\\/g, '\\\\')
+    .replace(/;/g, '\\;')
+    .replace(/,/g, '\\,')
+    .replace(/\r\n|\r|\n/g, '\\n');
+}
+
+const CRLF = '\r\n';
 
 export interface WifiOptions {
   ssid: string;
@@ -24,9 +35,14 @@ export function wifi({ ssid, password, encryption = 'WPA', hidden = false }: Wif
   return `WIFI:${parts.join(';')};;`;
 }
 
-/** A plain URL (normalized to include a scheme). */
+/**
+ * A plain URL, normalized to include a scheme. `localhost:3000` and
+ * `example.com:8080/x` are hosts with ports, not schemes.
+ */
 export function url(value: string): string {
-  return /^[a-z][a-z0-9+.-]*:/i.test(value) ? value : `https://${value}`;
+  const v = value.trim();
+  const hasScheme = /^[a-z][a-z0-9+.-]*:/i.test(v) && !/^[a-z0-9.-]+:\d+(\/|$)/i.test(v);
+  return hasScheme ? v : `https://${v}`;
 }
 
 export interface EmailOptions {
@@ -49,7 +65,9 @@ export function email({ to, subject, body, cc, bcc }: EmailOptions): string {
   add('body', body);
   add('cc', cc);
   add('bcc', bcc);
-  return `mailto:${to}${params.length ? `?${params.join('&')}` : ''}`;
+  // Keep '@' and ',' readable in the address; encode anything URL-unsafe.
+  const addr = encodeURIComponent(to.trim()).replace(/%40/g, '@').replace(/%2C/g, ',');
+  return `mailto:${addr}${params.length ? `?${params.join('&')}` : ''}`;
 }
 
 /** SMS payload (`SMSTO:` form, widely supported). */
@@ -68,6 +86,15 @@ export function geo({
   lng,
   altitude,
 }: { lat: number; lng: number; altitude?: number }): string {
+  for (const [name, v] of [
+    ['lat', lat],
+    ['lng', lng],
+  ] as const) {
+    if (!Number.isFinite(v)) throw new RangeError(`Rune: geo ${name} must be a finite number`);
+  }
+  if (Math.abs(lat) > 90 || Math.abs(lng) > 180) {
+    throw new RangeError('Rune: geo lat must be within ±90 and lng within ±180');
+  }
   return altitude != null ? `geo:${lat},${lng},${altitude}` : `geo:${lat},${lng}`;
 }
 
@@ -84,28 +111,37 @@ export interface VCardOptions {
   note?: string;
 }
 
-/** vCard 3.0 contact payload. */
+/** vCard 3.0 contact payload (CRLF line endings, RFC-escaped values). */
 export function vcard(o: VCardOptions): string {
   const name = o.fullName ?? [o.firstName, o.lastName].filter(Boolean).join(' ');
   const lines = ['BEGIN:VCARD', 'VERSION:3.0'];
-  if (o.lastName || o.firstName) lines.push(`N:${o.lastName ?? ''};${o.firstName ?? ''};;;`);
-  if (name) lines.push(`FN:${name}`);
-  if (o.org) lines.push(`ORG:${o.org}`);
-  if (o.title) lines.push(`TITLE:${o.title}`);
+  if (o.lastName || o.firstName) {
+    lines.push(`N:${escapeText(o.lastName ?? '')};${escapeText(o.firstName ?? '')};;;`);
+  }
+  if (name) lines.push(`FN:${escapeText(name)}`);
+  if (o.org) lines.push(`ORG:${escapeText(o.org)}`);
+  if (o.title) lines.push(`TITLE:${escapeText(o.title)}`);
   if (o.phone) lines.push(`TEL;TYPE=CELL:${o.phone}`);
   if (o.email) lines.push(`EMAIL:${o.email}`);
   if (o.url) lines.push(`URL:${o.url}`);
-  if (o.address) lines.push(`ADR:;;${o.address};;;;`);
-  if (o.note) lines.push(`NOTE:${o.note}`);
+  if (o.address) lines.push(`ADR:;;${escapeText(o.address)};;;;`);
+  if (o.note) lines.push(`NOTE:${escapeText(o.note)}`);
   lines.push('END:VCARD');
-  return lines.join('\n');
+  return lines.join(CRLF);
 }
 
 /** Compact MECARD contact payload. */
 export function mecard(o: VCardOptions): string {
-  const name = o.fullName ?? [o.lastName, o.firstName].filter(Boolean).join(',');
+  // MECARD N is "last,first"; escape each part so a comma inside a name
+  // cannot be mistaken for the separator (and the separator itself is not escaped).
+  const name = o.fullName
+    ? escapeSpecial(o.fullName)
+    : [o.lastName, o.firstName]
+        .filter((part): part is string => Boolean(part))
+        .map(escapeSpecial)
+        .join(',');
   const parts: string[] = [];
-  if (name) parts.push(`N:${escapeSpecial(name)}`);
+  if (name) parts.push(`N:${name}`);
   if (o.phone) parts.push(`TEL:${o.phone}`);
   if (o.email) parts.push(`EMAIL:${o.email}`);
   if (o.url) parts.push(`URL:${escapeSpecial(o.url)}`);
@@ -114,8 +150,11 @@ export function mecard(o: VCardOptions): string {
   return `MECARD:${parts.join(';')};;`;
 }
 
-function icalDate(value: Date | string): string {
+function icalDate(value: Date | string, name: string): string {
   const d = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(d.getTime())) {
+    throw new RangeError(`Rune: event ${name} is not a valid date: ${String(value)}`);
+  }
   return `${d.toISOString().replace(/[-:]/g, '').split('.')[0]}Z`;
 }
 
@@ -127,18 +166,23 @@ export interface EventOptions {
   description?: string;
 }
 
-/** iCalendar VEVENT payload. */
+/**
+ * iCalendar event payload. Wrapped in `VCALENDAR` because several Android
+ * scanners only recognise a `VEVENT` inside one.
+ */
 export function event(o: EventOptions): string {
   const lines = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
     'BEGIN:VEVENT',
-    `SUMMARY:${o.title}`,
-    `DTSTART:${icalDate(o.start)}`,
-    `DTEND:${icalDate(o.end)}`,
+    `SUMMARY:${escapeText(o.title)}`,
+    `DTSTART:${icalDate(o.start, 'start')}`,
+    `DTEND:${icalDate(o.end, 'end')}`,
   ];
-  if (o.location) lines.push(`LOCATION:${o.location}`);
-  if (o.description) lines.push(`DESCRIPTION:${o.description}`);
-  lines.push('END:VEVENT');
-  return lines.join('\n');
+  if (o.location) lines.push(`LOCATION:${escapeText(o.location)}`);
+  if (o.description) lines.push(`DESCRIPTION:${escapeText(o.description)}`);
+  lines.push('END:VEVENT', 'END:VCALENDAR');
+  return lines.join(CRLF);
 }
 
 export interface CryptoOptions {

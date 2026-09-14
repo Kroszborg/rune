@@ -5,30 +5,30 @@
   "throughputWindowMs": 2000,
   "renderers": {
     "Rune (toSVGString)": {
-      "throughput": 1266,
-      "ssrMedian": 1.3627,
-      "ssrP95": 3.2285
+      "throughput": 1120,
+      "ssrMedian": 1.427,
+      "ssrP95": 3.2247
     },
     "Rune (React)": {
-      "throughput": 676,
-      "ssrMedian": 1.647,
-      "ssrP95": 3.4701
+      "throughput": 636,
+      "ssrMedian": 1.9802,
+      "ssrP95": 5.4247
     },
     "qrcode.react": {
-      "throughput": 864,
-      "ssrMedian": 1.3649,
-      "ssrP95": 2.7036
+      "throughput": 628,
+      "ssrMedian": 1.501,
+      "ssrP95": 3.2158
     },
     "react-qr-code": {
-      "throughput": 457,
-      "ssrMedian": 1.8991,
-      "ssrP95": 4.0807
+      "throughput": 386,
+      "ssrMedian": 2.138,
+      "ssrP95": 4.5756
     }
   },
   "bundle": {
     "Rune (core)": {
-      "minKB": 19.3,
-      "gzipKB": 8.1
+      "minKB": 23.5,
+      "gzipKB": 9.9
     },
     "qrcode.react": {
       "minKB": 17.3,

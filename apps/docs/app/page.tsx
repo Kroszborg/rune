@@ -27,7 +27,10 @@ const FEATURES = [
     'Gradients & frames',
     'Linear/radial gradients per element, background images, frames with CTA text.',
   ],
-  ['Logos, safely', 'Embed any image or React node; size auto-clamped per ECL to stay scannable.'],
+  [
+    'Logos, safely',
+    'Image or live node. The lowest ECL that covers the logo is chosen from exact codeword damage.',
+  ],
   ['Data builders', 'WiFi, vCard, email, SMS, geo, calendar, crypto - correctly escaped for you.'],
   ['Export anywhere', 'toSVGString (sync/SSR), plus PNG · JPEG · WebP · PDF via optional peers.'],
 ];

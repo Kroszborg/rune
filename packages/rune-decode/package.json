@@ -1,6 +1,6 @@
 {
   "name": "@kroszborg/rune-decode",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "From-scratch QR code decoder — module-matrix and image (RGBA) decoding with Reed–Solomon error correction.",
   "author": "Abhiman Panwar (@kroszborg)",
   "license": "MIT",
@@ -9,21 +9,34 @@
   "keywords": ["qr", "qrcode", "decode", "decoder", "reed-solomon", "scanner"],
   "repository": {
     "type": "git",
-    "url": "https://github.com/Kroszborg/rune",
+    "url": "git+https://github.com/Kroszborg/rune.git",
     "directory": "packages/rune-decode"
   },
   "homepage": "https://rune.kroszborg.co",
+  "bugs": {
+    "url": "https://github.com/Kroszborg/rune/issues"
+  },
+  "engines": {
+    "node": ">=20"
+  },
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    }
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      },
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
   },
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": ["dist"],
+  "files": ["dist", "LICENSE", "CHANGELOG.md"],
   "scripts": {
     "build": "tsup",
     "test": "vitest run",
@@ -34,11 +47,14 @@
     "@kroszborg/rune": "workspace:*",
     "@resvg/resvg-js": "^2.6.2",
     "@types/node": "^22.10.2",
-    "typescript": "^5.7.2",
+    "@types/qrcode": "^1.5.5",
+    "qrcode": "^1.5.4",
     "tsup": "^8.3.5",
+    "typescript": "^5.7.2",
     "vitest": "^2.1.8"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "provenance": true
   }
 }

@@ -5,9 +5,23 @@ on:
     branches: [main]
   pull_request:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
-    runs-on: ubuntu-latest
+    name: ${{ matrix.os }} / node ${{ matrix.node }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        node: [20, 22, 24]
     steps:
       - uses: actions/checkout@v4
 
@@ -17,22 +31,35 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: ${{ matrix.node }}
           cache: pnpm
 
       - name: Install
         run: pnpm install --frozen-lockfile
 
       - name: Lint
+        if: matrix.os == 'ubuntu-latest' && matrix.node == 22
         run: pnpm lint
 
       - name: Typecheck
+        if: matrix.os == 'ubuntu-latest' && matrix.node == 22
         run: pnpm typecheck
 
       - name: Build
         run: pnpm build
 
       # Includes the scan-back round-trips: every rendered style is decoded
-      # again (via @kroszborg/rune-decode and jsQR) to prove it is scannable.
+      # again (via @kroszborg/rune-decode and jsQR) to prove it is scannable,
+      # plus the Node raster/PDF export and CLI end-to-end tests.
       - name: Test
         run: pnpm test
+
+      - name: Pack (what would be published)
+        if: matrix.os == 'ubuntu-latest' && matrix.node == 22
+        run: pnpm -r --filter "./packages/*" exec pnpm pack --pack-destination ../../.artifacts
+
+      - uses: actions/upload-artifact@v4
+        if: matrix.os == 'ubuntu-latest' && matrix.node == 22
+        with:
+          name: tarballs
+          path: .artifacts/*.tgz

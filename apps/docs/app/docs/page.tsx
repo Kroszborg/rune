@@ -218,7 +218,7 @@ const svg = toSVGString({ value: 'https://example.com', dots: { style: 'rounded'
                   <code key="13">logo</code>,
                   <code key="14">LogoOptions</code>,
                   '-',
-                  'Center logo (auto-raises ECL).',
+                  'Center logo, image or bare plate; picks the lowest safe ECL.',
                 ],
                 [
                   <code key="15">frame</code>,
@@ -228,9 +228,9 @@ const svg = toSVGString({ value: 'https://example.com', dots: { style: 'rounded'
                 ],
                 [
                   <code key="17">qr</code>,
-                  <code key="18">{'{ errorCorrectionLevel, version, mask }'}</code>,
+                  <code key="18">{'{ errorCorrectionLevel, version, mask, eci, boostEcl }'}</code>,
                   '-',
-                  'Encoding controls.',
+                  "Encoding controls. ECL accepts 'H', 'h' or 'high'; eci adds a UTF-8 header for strict readers.",
                 ],
                 [
                   <code key="19">preset</code>,
@@ -241,11 +241,31 @@ const svg = toSVGString({ value: 'https://example.com', dots: { style: 'rounded'
                 [
                   <code key="21">ariaLabel</code>,
                   <code key="22">string</code>,
-                  "'QR code: {value}'",
-                  'Accessible label on the <svg>.',
+                  'see note',
+                  "Accessible label. Defaults to 'QR code: {value}' for short http(s) URLs and plain 'QR code' otherwise, so WiFi passwords are never read aloud.",
+                ],
+                [
+                  <code key="23">title</code>,
+                  <code key="24">string</code>,
+                  '-',
+                  '<title> element (tooltip) inside the SVG.',
+                ],
+                [
+                  <code key="25">idPrefix</code>,
+                  <code key="26">string</code>,
+                  'hash',
+                  'Namespace for gradient ids when identical codes share a page.',
                 ],
               ]}
             />
+            <P>
+              Every option is validated before anything is drawn: an unknown style or preset name, a
+              non-finite <Mono>size</Mono>, a negative <Mono>margin</Mono>, an empty gradient or a
+              bad ECL throws a <Mono>RangeError</Mono> that names the option, rather than producing
+              a broken SVG. <Mono>validateOptions()</Mono> is exported for checking ahead of time.
+              Keys whose value is <Mono>undefined</Mono> are ignored, so a framework component
+              forwarding every prop never overrides a preset.
+            </P>
           </Section>
 
           <Section id="dots" title="Dot styles">
@@ -313,8 +333,22 @@ const svg = toSVGString({ value: 'https://example.com', dots: { style: 'rounded'
                   <code key="9">corners.dot.color / gradient</code>,
                   <code key="10">string | Gradient</code>,
                 ],
+                [
+                  <code key="11">corners.alignment.style</code>,
+                  <code key="12">'square' | 'rounded' | 'circle' | 'inherit'</code>,
+                ],
+                [
+                  <code key="13">corners.alignment.color / gradient</code>,
+                  <code key="14">string | Gradient</code>,
+                ],
               ]}
             />
+            <P>
+              Alignment patterns (versions 2 and up) are drawn as solid shapes by default rather
+              than in the dot style, because decoders locate them to correct perspective and a
+              star-shaped alignment pattern is the first thing to fail on a print. Pass{' '}
+              <Mono>'inherit'</Mono> to style them like the data anyway.
+            </P>
           </Section>
 
           <Section id="colors" title="Colors & gradients">
@@ -433,7 +467,7 @@ background={{ gradient: { type: 'radial', stops: [...] } }}`}</Code>
                   <code key="3">size</code>,
                   <code key="4">number</code>,
                   '0.25',
-                  'Fraction of width (clamped per ECL).',
+                  'Fraction of width, up to 0.3. Shrunk only if even ECL H cannot absorb it.',
                 ],
                 [
                   <code key="5">margin</code>,
@@ -459,12 +493,27 @@ background={{ gradient: { type: 'radial', stops: [...] } }}`}</Code>
                   'bg color',
                   'Backing plate color.',
                 ],
+                [
+                  <code key="13">clamp</code>,
+                  <code key="14">boolean</code>,
+                  'true',
+                  'Shrink the logo when it exceeds the safe damage budget.',
+                ],
               ]}
             />
-            <Code>{`<QRCode value="..." logo={{ src: '/logo.png', size: 0.28, shape: 'circle' }} />`}</Code>
+            <Code>{`<QRCode value="..." logo={{ src: '/logo.png', size: 0.2, shape: 'circle' }} />`}</Code>
             <P>
-              In React you can pass a live React node instead of an image with{' '}
-              <Mono>logoElement</Mono> (see Frameworks).
+              Rune never forces ECL H for a logo, which would make the code denser and harder to
+              scan. It counts exactly how many codewords the logo hides in each Reed-Solomon block
+              and steps the level up M, Q, H only as far as that damage needs, keeping 30% of the
+              correction capacity for real-world wear. If even H cannot absorb the logo (small
+              symbols have little redundancy) the logo is shrunk to the largest safe size. Set{' '}
+              <Mono>qr.errorCorrectionLevel</Mono> to pin a level instead.
+            </P>
+            <P>
+              Omit <Mono>src</Mono> to get a bare cleared plate, which is what the React{' '}
+              <Mono>logoElement</Mono> prop and the Vue default slot use to overlay a live node (see
+              Frameworks). <Mono>renderToParts().logo</Mono> reports the cleared box.
             </P>
           </Section>
 
@@ -518,7 +567,9 @@ background={{ gradient: { type: 'radial', stops: [...] } }}`}</Code>
             <P>
               Higher levels recover from more damage but hold less data. Set with{' '}
               <Mono>qr.errorCorrectionLevel</Mono>. You can also pin the <Mono>version</Mono> (1-40)
-              and <Mono>mask</Mono> (0-7); both are chosen automatically by default.
+              and <Mono>mask</Mono> (0-7); both are chosen automatically by default. Mixed payloads
+              are split into numeric, alphanumeric and byte segments for the smallest symbol, and an
+              empty <Mono>value</Mono> throws rather than rendering a blank code.
             </P>
             <Table
               head={['Level', 'Recovery', 'Use when']}
@@ -526,7 +577,7 @@ background={{ gradient: { type: 'radial', stops: [...] } }}`}</Code>
                 [<code key="1">L</code>, '~7%', 'Clean environments, minimal data.'],
                 [<code key="2">M</code>, '~15%', 'General purpose (default).'],
                 [<code key="3">Q</code>, '~25%', 'Print, harsher conditions.'],
-                [<code key="4">H</code>, '~30%', 'Codes with a center logo.'],
+                [<code key="4">H</code>, '~30%', 'Large logos, heavy wear.'],
               ]}
             />
           </Section>
@@ -595,7 +646,7 @@ data.crypto({ coin: 'bitcoin', address: '1abc', amount: 0.5 })`}</Code>
                   'node (/node)',
                 ],
                 [
-                  <code key="9">toPDF(o)</code>,
+                  <code key="9">toPDF(o, p?)</code>,
                   <code key="10">Promise&lt;Uint8Array&gt;</code>,
                   'node (/node)',
                 ],
@@ -603,7 +654,13 @@ data.crypto({ coin: 'bitcoin', address: '1abc', amount: 0.5 })`}</Code>
             />
             <P>
               <Mono>RasterOptions</Mono>: <Mono>format</Mono> ('png' | 'jpeg' | 'webp'),{' '}
-              <Mono>quality</Mono> (0-1), <Mono>background</Mono>.
+              <Mono>quality</Mono> (0-1), <Mono>scale</Mono> (pixel density; defaults to{' '}
+              <Mono>devicePixelRatio</Mono> in the browser and 1 in Node), <Mono>background</Mono>{' '}
+              (JPEG only; PNG and WebP keep alpha) and <Mono>inlineRemoteImages</Mono> (default
+              true: http(s) logo and background images are fetched and embedded, because neither
+              Canvas nor resvg loads remote images). <Mono>toPDF</Mono> renders at 4x for print and
+              takes <Mono>page</Mono> and <Mono>printSize</Mono> in points. Out-of-range values
+              throw a <Mono>RangeError</Mono>.
             </P>
             <Code>{`import { toBuffer, toPDF } from '@kroszborg/rune/node';
 
@@ -642,6 +699,15 @@ const { text } = decodeMatrix(modules); // modules[y][x], true = dark`}</Code>
             <P>
               <Mono>MatrixDecodeResult</Mono> = <Mono>{'{ text, version, ecl, mask }'}</Mono>.
             </P>
+            <P>
+              Supported: versions 1-40, every ECL and mask, numeric / alphanumeric / byte modes,
+              multi-segment payloads, ECI charsets, format-information BCH correction and
+              Reed-Solomon correction up to half the block's ECC codewords. Kanji mode, Structured
+              Append and FNC1 throw <Mono>UnsupportedModeError</Mono> instead of returning truncated
+              text. The image path handles clean upright or rotated images and composites alpha over
+              white; mirrored images, strong perspective and uneven lighting are out of scope (use a
+              camera-grade decoder such as ZXing for those).
+            </P>
           </Section>
 
           <Section id="cli" title="CLI">
@@ -666,43 +732,86 @@ rune decode qr.png`}</Code>
                   <code key="2">-s, --size / -m, --margin</code>,
                   'Size in px / quiet-zone modules.',
                 ],
-                [<code key="3">--ecl</code>, 'L | M | Q | H.'],
-                [<code key="4">--dots / --dot-color</code>, 'Dot style / color.'],
-                [<code key="5">--gradient "a,b,r"</code>, 'Linear gradient from,to,rotation.'],
-                [<code key="6">--square / --core</code>, 'Finder ring / core style.'],
                 [
-                  <code key="7">--bg / --frame / --logo / --preset</code>,
-                  'Background, CTA frame, logo, preset.',
+                  <code key="3">--ecl</code>,
+                  'L | M | Q | H (any case, or low/medium/quartile/high).',
+                ],
+                [<code key="4">--dots / --dot-color</code>, 'Dot style (all nine) / color.'],
+                [<code key="5">--gradient "a,b,r"</code>, 'Linear gradient from,to,rotation.'],
+                [
+                  <code key="6">--square / --core / --alignment</code>,
+                  'Finder ring / finder core / alignment-pattern style.',
+                ],
+                [<code key="7">--bg / --preset</code>, 'Background color, preset.'],
+                [
+                  <code key="8">--frame / --frame-style / --frame-color</code>,
+                  'CTA text, border style (none | square | rounded), color.',
+                ],
+                [
+                  <code key="9">--logo / --logo-size / --logo-shape / --no-clamp</code>,
+                  'Logo path, URL or data URI (local files are inlined), size, plate shape.',
+                ],
+                [
+                  <code key="10">--scale / --quality</code>,
+                  'Raster pixel density (PDF default 4) and JPEG/WebP quality.',
+                ],
+                [
+                  <code key="11">--eci / --qr-version / --mask / --title / --aria-label</code>,
+                  'Encoding and accessibility controls.',
+                ],
+                [
+                  <code key="12">- / --stdin / --</code>,
+                  'Read the value from stdin; treat everything after -- as the value.',
                 ],
               ]}
             />
+            <P>
+              Unknown flags and bad values exit with code 1 before anything is written, so a typo
+              can never end up encoded in the QR. <Mono>-o -</Mono> streams the file to stdout.
+            </P>
           </Section>
 
           <Section id="frameworks" title="Frameworks">
             <p className="mb-2 text-sm font-medium text-ink">React</p>
             <P>
               Accepts every RuneOptions prop, plus <Mono>style</Mono>, <Mono>className</Mono>, and{' '}
-              <Mono>logoElement</Mono> (a React node overlaid in the center).
+              <Mono>logoElement</Mono>: a React node used as the logo. The core clears the modules
+              behind it and picks the error-correction level exactly as for <Mono>logo.src</Mono>.
+              Size, margin, shape and plate color come from <Mono>logo</Mono>. Re-renders are
+              skipped while the options are structurally unchanged, so inline objects are fine. Any
+              other prop (<Mono>id</Mono>, <Mono>onClick</Mono>, <Mono>data-*</Mono>,{' '}
+              <Mono>tabIndex</Mono>) is forwarded to the <Mono>&lt;svg&gt;</Mono>; an empty{' '}
+              <Mono>value</Mono> renders nothing, so controlled inputs can start blank.
             </P>
             <Code>{`import { QRCode } from '@kroszborg/rune-react';
-<QRCode value="..." dots={{ style: 'rounded' }} logoElement={<MyLogo />} qr={{ errorCorrectionLevel: 'H' }} />`}</Code>
+<QRCode value="..." dots={{ style: 'rounded' }} logo={{ size: 0.2 }} logoElement={<MyLogo />} />`}</Code>
 
             <p className="mb-2 mt-6 text-sm font-medium text-ink">Vue 3</p>
+            <P>The default slot is the logo, with the same plate and ECL handling as React.</P>
             <Code>{`<script setup>
 import { QRCode } from '@kroszborg/rune-vue';
 </script>
 <template>
   <QRCode value="..." :dots="{ style: 'rounded' }" />
+  <QRCode value="..." :logo="{ size: 0.2 }"><img src="/logo.svg" /></QRCode>
 </template>`}</Code>
 
             <p className="mb-2 mt-6 text-sm font-medium text-ink">Web Component (vanilla)</p>
             <P>
-              Attributes for simple cases; set the <Mono>.options</Mono> property for the full
-              object.
+              Attributes cover the common options: <Mono>value</Mono>, <Mono>size</Mono>,{' '}
+              <Mono>margin</Mono>, <Mono>preset</Mono>, <Mono>dot-style</Mono>,{' '}
+              <Mono>dot-color</Mono>, <Mono>corner-style</Mono>, <Mono>corner-dot-style</Mono>,{' '}
+              <Mono>corner-color</Mono>, <Mono>alignment-style</Mono>, <Mono>background</Mono>,{' '}
+              <Mono>ecl</Mono>, <Mono>logo</Mono>, <Mono>logo-size</Mono>, <Mono>frame-style</Mono>,{' '}
+              <Mono>frame-text</Mono>, <Mono>frame-color</Mono>, <Mono>aria-label</Mono>,{' '}
+              <Mono>title</Mono>. Gradients, background images and everything else go through the{' '}
+              <Mono>.options</Mono> property. Renders are coalesced per microtask and skipped while
+              disconnected; invalid input clears the element and dispatches a{' '}
+              <Mono>rune-error</Mono> event instead of throwing.
             </P>
             <Code>{`import { register } from '@kroszborg/rune-wc';
 register();
-// <rune-qr value="..." dot-style="rounded" preset="mint"></rune-qr>
+// <rune-qr value="..." dot-style="rounded" corner-style="extra-rounded" frame-text="SCAN ME"></rune-qr>
 // el.options = { value: '...', dots: { gradient: {...} }, frame: { text: 'SCAN ME' } };`}</Code>
 
             <p className="mb-2 mt-6 text-sm font-medium text-ink">React Native</p>

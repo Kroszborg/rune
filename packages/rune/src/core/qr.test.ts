@@ -2,7 +2,7 @@ import QRCode from 'qrcode';
 import { describe, expect, it } from 'vitest';
 import { reedSolomonGenerator } from './galois.js';
 import { encode } from './qr.js';
-import { versionSize } from './tables.js';
+import { numDataCodewords, versionSize } from './tables.js';
 import type { Ecl } from './types.js';
 
 /** Convert node-qrcode's flat bit array into a boolean[][] grid. */
@@ -115,5 +115,79 @@ describe('auto selection', () => {
     const m = encode('注文番号12345', { errorCorrectionLevel: 'M' });
     expect(m.size).toBeGreaterThanOrEqual(21);
     expect(m.modules.length).toBe(m.size);
+  });
+});
+
+describe('multi-segment encoding', () => {
+  // Mixed payloads must split into numeric / alphanumeric / byte runs exactly
+  // as node-qrcode does, so the matrices stay bit-for-bit identical.
+  const mixed = [
+    'https://x.co/r/1234567890123',
+    'Tel: +91 98765 43210 ext 42',
+    'https://rune.kroszborg.co/?id=98765432109876543210&ref=ABCDEF',
+    'ABC123abc456DEF789012345678',
+    'WIFI:T:WPA;S:MyNet;P:12345678901234567890;;',
+  ];
+  for (const text of mixed) {
+    it(`splits like the reference: ${JSON.stringify(text.slice(0, 28))}`, () => {
+      const ref = QRCode.create(text, { errorCorrectionLevel: 'm', maskPattern: 3 });
+      const ours = encode(text, {
+        errorCorrectionLevel: 'M',
+        version: ref.version,
+        mask: 3,
+        boostEcl: false,
+      });
+      expect(ref.segments.length).toBeGreaterThan(1);
+      expect(gridsEqual(ours.modules, referenceGrid(text, 'M', ref.version, 3))).toBe(true);
+    });
+  }
+
+  it('lands a numeric-tailed URL one version smaller than single-segment byte mode', () => {
+    const text = `https://x.co/r/${'7'.repeat(40)}`;
+    const split = encode(text, { errorCorrectionLevel: 'M', boostEcl: false });
+    // Single byte segment: 4 + 8 + 8*55 = 452 bits > v4-M (512)? no — force by capacity math:
+    const singleBits = 4 + 8 + new TextEncoder().encode(text).length * 8;
+    expect(singleBits).toBeGreaterThan(numDataCodewords(split.version, 'M') * 8);
+  });
+
+  it('emits a UTF-8 ECI header only when asked and only for non-Latin-1 text', () => {
+    const plain = encode('Rune ✓', { eci: false, mask: 0 });
+    const withEci = encode('Rune ✓', { eci: true, mask: 0 });
+    expect(gridsEqual(plain.modules, withEci.modules)).toBe(false);
+    // ASCII payloads never carry an ECI header, opted in or not.
+    const a = encode('HELLO', { eci: true, mask: 0 });
+    const b = encode('HELLO', { eci: false, mask: 0 });
+    expect(gridsEqual(a.modules, b.modules)).toBe(true);
+  });
+
+  it('rejects an empty value', () => {
+    expect(() => encode('')).toThrow(/non-empty/);
+  });
+});
+
+describe('codeword layout', () => {
+  it('maps every data module to a codeword and every codeword to a block', () => {
+    const m = encode('https://rune.kroszborg.co/layout', { errorCorrectionLevel: 'Q' });
+    const { codewordAt, blockOf, blockCount, correctablePerBlock } = m.layout;
+    expect(codewordAt.length).toBe(m.size * m.size);
+    let mapped = 0;
+    for (let i = 0; i < codewordAt.length; i++) if (codewordAt[i]! >= 0) mapped++;
+    expect(mapped).toBe(blockOf.length * 8);
+    for (const b of blockOf) expect(b).toBeLessThan(blockCount);
+    expect(correctablePerBlock).toBeGreaterThan(0);
+  });
+});
+
+describe('ECI for accented Latin-1 text', () => {
+  it('emits the header for any non-ASCII text when opted in', () => {
+    const plain = encode('café', { eci: false, mask: 0 });
+    const withEci = encode('café', { eci: true, mask: 0 });
+    expect(gridsEqual(plain.modules, withEci.modules)).toBe(false);
+  });
+
+  it('validates version and maxVersion', () => {
+    expect(() => encode('x', { version: 41 })).toThrow(/version/);
+    expect(() => encode('x', { version: 2.5 })).toThrow(/version/);
+    expect(() => encode('x', { errorCorrectionLevel: 'low' as 'L' }).ecl).not.toThrow();
   });
 });

@@ -31,7 +31,7 @@ export class PaintRegistry {
     if (g.type === 'radial') {
       this.defs.push(el('radialGradient', { id, cx: '50%', cy: '50%', r: '50%' }, stops));
     } else {
-      const rad = ((g.rotation ?? 0) * Math.PI) / 180;
+      const rad = ((g.rotation || 0) * Math.PI) / 180;
       const x1 = 50 - Math.cos(rad) * 50;
       const y1 = 50 - Math.sin(rad) * 50;
       const x2 = 50 + Math.cos(rad) * 50;

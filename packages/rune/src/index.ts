@@ -12,19 +12,42 @@ export {
   encode,
   MAX_VERSION,
   MIN_VERSION,
+  normalizeEcl,
   numDataCodewords,
   versionSize,
 } from './core/index.js';
-export type { Ecl, EncodeOptions, Mode, RuneMatrix } from './core/index.js';
+export type {
+  CodewordLayout,
+  Ecl,
+  EclInput,
+  EncodeOptions,
+  Mode,
+  RuneMatrix,
+} from './core/index.js';
 
 // Renderer + options
-export { getPreset, PRESETS, renderToParts, toSVGString } from './render/index.js';
-export type { SvgParts } from './render/index.js';
+export {
+  ALIGNMENT_STYLES,
+  DEFAULTS,
+  DOT_STYLES,
+  FINDER_CORNERS,
+  FINDER_DOT_STYLES,
+  FINDER_SQUARE_STYLES,
+  getPreset,
+  PRESETS,
+  renderToParts,
+  toSVGString,
+  validateOptions,
+} from './render/index.js';
+export type { LogoBox, SvgParts } from './render/index.js';
 export type {
+  AlignmentStyle,
   BackgroundOptions,
   CornerOptions,
   DotStyle,
   Fill,
+  FinderCorner,
+  FinderCornerOptions,
   FinderDotStyle,
   FinderSquareStyle,
   FrameOptions,
@@ -38,7 +61,7 @@ export type {
 } from './render/index.js';
 
 // Browser raster export (Canvas). Node raster/PDF live in `@kroszborg/rune/node`.
-export { svgDataUri, toDataURL } from './export/index.js';
+export { inlineRemoteImages, svgDataUri, toDataURL } from './export/index.js';
 export type { RasterFormat, RasterOptions } from './export/index.js';
 
 // Payload builders (WiFi, vCard, email, …)

@@ -1,4 +1,4 @@
-import type { DotStyle, FinderDotStyle, FinderSquareStyle } from './types.js';
+import type { AlignmentStyle, DotStyle, FinderDotStyle, FinderSquareStyle } from './types.js';
 
 /** Rounded-corner flags for a rectangle. */
 interface Corners {
@@ -194,4 +194,31 @@ export function finderDotPath(style: FinderDotStyle, x: number, y: number, cell:
     case 'dot':
       return circlePath(px + size / 2, py + size / 2, size / 2);
   }
+}
+
+/**
+ * A 5×5 alignment pattern as an even-odd path: outer 5×5 minus the 3×3 hole,
+ * plus the solid centre module. `x`,`y` is the block's top-left in px.
+ */
+export function alignmentPath(
+  style: Exclude<AlignmentStyle, 'inherit'>,
+  x: number,
+  y: number,
+  cell: number,
+): string {
+  const outer = cell * 5;
+  const inner = cell * 3;
+  if (style === 'circle') {
+    const cx = x + outer / 2;
+    const cy = y + outer / 2;
+    return (
+      circlePath(cx, cy, outer / 2) + circlePath(cx, cy, inner / 2) + circlePath(cx, cy, cell / 2)
+    );
+  }
+  const r = style === 'rounded' ? cell : 0;
+  return (
+    roundedRectPath(x, y, outer, outer, uniform(r)) +
+    roundedRectPath(x + cell, y + cell, inner, inner, uniform(r * 0.6)) +
+    roundedRectPath(x + cell * 2, y + cell * 2, cell, cell, uniform(r * 0.3))
+  );
 }
