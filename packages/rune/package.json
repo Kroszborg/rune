@@ -6,7 +6,15 @@
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
-  "keywords": ["qr", "qrcode", "qr-code", "svg", "generator", "iso-18004", "zero-dependency"],
+  "keywords": [
+    "qr",
+    "qrcode",
+    "qr-code",
+    "svg",
+    "generator",
+    "iso-18004",
+    "zero-dependency"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Kroszborg/rune.git",
@@ -49,10 +57,16 @@
   "types": "./dist/index.d.ts",
   "typesVersions": {
     "*": {
-      "node": ["./dist/node.d.ts"]
+      "node": [
+        "./dist/node.d.ts"
+      ]
     }
   },
-  "files": ["dist", "LICENSE", "CHANGELOG.md"],
+  "files": [
+    "dist",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -90,7 +104,6 @@
     "vitest": "^2.1.8"
   },
   "publishConfig": {
-    "access": "public",
-    "provenance": true
+    "access": "public"
   }
 }
